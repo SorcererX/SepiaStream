@@ -1,4 +1,5 @@
 #include "imagereader.h"
+#include <sepia/databuffer.h>
 
 ImageReader::ImageReader( std::string name ) : ImageStream( name )
 {

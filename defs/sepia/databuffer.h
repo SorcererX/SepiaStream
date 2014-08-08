@@ -6,17 +6,21 @@
 
 namespace sepia
 {
+typedef struct {
+    unsigned int index;
+    unsigned int size;
+    bool complete;
+} info_t;
+
 class Semaphore;
+typedef struct {
+    info_t* info;
+    char* data;
+} elem_t;
 
 class DataBuffer
 {
 public:
-
-    typedef struct {
-        unsigned int index;
-        unsigned int size;
-        bool complete;
-    } info_t;
 
     typedef struct {
         key_t sem_key;
@@ -25,10 +29,6 @@ public:
         size_t elem_size;
     } header_t;
 
-    typedef struct {
-        info_t* info;
-        char* data;
-    } elem_t;
     DataBuffer( std::string a_name );
     DataBuffer( std::string a_name, unsigned int count, size_t elem_size );
     void getReadAccess( elem_t& element );

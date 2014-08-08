@@ -13,7 +13,7 @@ public:
 
 private:
     std::vector< image_header_t > m_headers;
-    sepia::DataBuffer::elem_t m_previousElement;
+    sepia::elem_t m_previousElement;
 };
 
 #endif // IMAGEWRITER_H

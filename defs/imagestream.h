@@ -1,7 +1,9 @@
 #ifndef IMAGESTREAM_H
 #define IMAGESTREAM_H
-#include <sepia/databuffer.h>
 #include <cstdint>
+#include <cstdlib>
+#include <string>
+#include <sepia/databuffer.h>
 
 class ImageStream
 {
@@ -38,7 +40,7 @@ protected:
     bool setSize( size_t id, u_int32_t size );
     char* getHeaderAddressFromElement( char* element, size_t id );
     char* getHeaderAddress( size_t id );
-    sepia::DataBuffer::elem_t m_element;
+    sepia::elem_t m_element;
     sepia::DataBuffer* m_buffer;
 private:
     group_header_t* getGroupHeaderFromElement( char* element );

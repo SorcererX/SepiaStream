@@ -1,4 +1,5 @@
 #include "imagestream.h"
+#include <sepia/databuffer.h>
 #include <iostream>
 
 ImageStream::ImageStream( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp )
