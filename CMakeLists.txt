@@ -11,7 +11,8 @@ set( INCLUDE_FILES
 set( HEADER_FILES ${INCLUDE_FILES}
     ${CMAKE_SOURCE_DIR}/defs/sepia/databuffer.h
     ${CMAKE_SOURCE_DIR}/defs/sepia/semaphore_interface.h
-    ${CMAKE_SOURCE_DIR}/defs/sepia/sharedmemory.h )
+    ${CMAKE_SOURCE_DIR}/defs/sepia/sharedmemory.h
+    ${CMAKE_SOURCE_DIR}/defs/sepia/semaphore.h )
 aux_source_directory(src SRC_LIST)
 include_directories(defs)
 include_directories(defs/sepia)
