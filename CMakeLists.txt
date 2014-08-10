@@ -20,6 +20,7 @@ add_library( ${PROJECT_NAME} ${SRC_LIST} ${HEADER_FILES} )
 target_link_libraries( ${PROJECT_NAME} -lrt )
 add_subdirectory(examples)
 
-install( TARGETS ${PROJECT_NAME} DESTINATION bin )
+install( TARGETS ${PROJECT_NAME} DESTINATION lib )
 install( FILES ${INCLUDE_FILES} DESTINATION include )
+install( FILES ${CMAKE_SOURCE_DIR}/defs/sepia/databuffer.h DESTINATION include/sepia )
 
