@@ -1,9 +1,11 @@
-#include "imagewriter.h"
+#include <sepia/writer.h>
 #include <iostream>
 #include <cstring>
 
-ImageWriter::ImageWriter( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp )
-    : ImageStream( name, images, width, height, bpp )
+namespace sepia
+{
+Writer::Writer( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp )
+    : Stream( name, images, width, height, bpp )
 {
     m_previousElement.data = NULL;
     m_previousElement.info = NULL;
@@ -29,14 +31,14 @@ ImageWriter::ImageWriter( std::string name, u_int32_t images, u_int32_t width, u
     }
 }
 
-ImageWriter::~ImageWriter()
+Writer::~Writer()
 {
     // release acquired semaphores.
     m_buffer->releaseWriteAccess( m_previousElement );
     m_buffer->releaseWriteAccess( m_element );
 }
 
-bool ImageWriter::setSize( size_t id, u_int32_t width, u_int32_t height, u_int32_t bpp )
+bool Writer::setSize( size_t id, u_int32_t width, u_int32_t height, u_int32_t bpp )
 {
     if( bpp % 8 != 0 )
     {
@@ -44,7 +46,7 @@ bool ImageWriter::setSize( size_t id, u_int32_t width, u_int32_t height, u_int32
         return false;
     }
 
-    if( ImageStream::setSize( id, width*height*(bpp/8) ) )
+    if( Stream::setSize( id, width*height*(bpp/8) ) )
     {
         image_header_t* header = getHeader( id );
         header->height = height;
@@ -60,7 +62,7 @@ bool ImageWriter::setSize( size_t id, u_int32_t width, u_int32_t height, u_int32
     return false;
 }
 
-void ImageWriter::copyWrite( size_t id, char* address )
+void Writer::copyWrite( size_t id, char* address )
 {
     if( id < getGroupHeader()->count )
     {
@@ -69,7 +71,7 @@ void ImageWriter::copyWrite( size_t id, char* address )
     }
 }
 
-void ImageWriter::update()
+void Writer::update()
 {
     m_previousElement = m_element;
     m_buffer->getWriteAccess( m_element );
@@ -83,4 +85,5 @@ void ImageWriter::update()
     }
 
     m_buffer->releaseWriteAccess( m_previousElement );
+}
 }

@@ -1,11 +1,13 @@
-#ifndef IMAGESTREAM_H
-#define IMAGESTREAM_H
+#ifndef SEPIA_STREAM_H
+#define SEPIA_STREAM_H
 #include <cstdint>
 #include <cstdlib>
 #include <string>
 #include <sepia/databuffer.h>
 
-class ImageStream
+namespace sepia
+{
+class Stream
 {
 public:
     struct group_header_t
@@ -35,15 +37,15 @@ public:
     group_header_t* getGroupHeader();
 
 protected:
-    ImageStream( std::string name );
-    ImageStream( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp );
+    Stream( std::string name );
+    Stream( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp );
     bool setSize( size_t id, u_int32_t size );
     char* getHeaderAddressFromElement( char* element, size_t id );
     char* getHeaderAddress( size_t id );
-    sepia::elem_t m_element;
-    sepia::DataBuffer* m_buffer;
+    elem_t m_element;
+    DataBuffer* m_buffer;
 private:
     group_header_t* getGroupHeaderFromElement( char* element );
 };
-
-#endif // IMAGESTREAM_H
+}
+#endif // SEPIA_STREAM_H

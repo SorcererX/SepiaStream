@@ -2,11 +2,11 @@
 #include <unistd.h>
 #include <vector>
 #include <cstring>
-#include <imagereader.h>
+#include <sepia/reader.h>
 
 int main( int argc, char** argv )
 {
-    ImageReader reader( "/image" );
+    sepia::Reader reader( "/image_TEST" );
 
     while( true )
     {
