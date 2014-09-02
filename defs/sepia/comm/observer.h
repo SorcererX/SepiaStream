@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "messages.pb.h"
+#include "header.pb.h"
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
 #include <unordered_set>
@@ -23,19 +23,19 @@ public:
         boost::shared_ptr< boost::barrier > barrier;
         std::vector< char > buffer;
         int32_t length;
-        cuttlefish_msgs::Header header;
+        Header header;
     } ThreadMessageData;
     static bool threadReceiver();
-    static bool routeMessageToThreads( const cuttlefish_msgs::Header* a_header, char* a_buffer, const size_t a_size );
+    static bool routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size );
 
 protected:
-    virtual void process( const cuttlefish_msgs::Header* a_header, const char* a_buffer, size_t a_size ) = 0;
+    virtual void process( const Header* a_header, const char* a_buffer, size_t a_size ) = 0;
     void addObserver( const std::string a_name, ObserverBase* a_Observer );
     void removeObserver( const std::string a_name );
     void addRouter( ObserverBase* a_Observer );
     ObserverBase();
-    static bool routeToNode( unsigned int node, const cuttlefish_msgs::Header* a_header, char* a_buffer, const size_t a_size );
-    static bool handleReceive( const cuttlefish_msgs::Header* a_header, const char* a_buffer, const size_t a_size );
+    static bool routeToNode( unsigned int node, const Header* a_header, char* a_buffer, const size_t a_size );
+    static bool handleReceive( const Header* a_header, const char* a_buffer, const size_t a_size );
 
 private:
 
@@ -64,7 +64,7 @@ protected:
     Observer() {
         ObserverBase::addObserver( MessageName::default_instance().GetTypeName(), this );
     }
-    void process( const cuttlefish_msgs::Header* a_header, const char* a_buffer, size_t a_size )
+    void process( const Header* a_header, const char* a_buffer, size_t a_size )
     {
         if( !a_header )
         {
@@ -88,11 +88,11 @@ protected:
     ObserverRouter() {
         ObserverBase::addRouter( this );
     }
-    void process( const cuttlefish_msgs::Header* a_header, const char* a_buffer, size_t a_size )
+    void process( const Header* a_header, const char* a_buffer, size_t a_size )
     {
         route( a_header, a_buffer, a_size );
     }
-    virtual void route( const cuttlefish_msgs::Header* a_header, const char* a_buffer, size_t a_size ) = 0;
+    virtual void route( const Header* a_header, const char* a_buffer, size_t a_size ) = 0;
 };
 
 

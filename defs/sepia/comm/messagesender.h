@@ -2,12 +2,13 @@
 #define SEPIA_COMM_MESSAGESENDER_H
 #include <vector>
 #include <string>
-#include <messages.pb.h>
 
 namespace sepia
 {
 namespace comm
 {
+class Header;
+
 class MessageHandler;
 
 class MessageSender
@@ -19,7 +20,7 @@ public:
 private:
     MessageSender() = delete;
     static MessageHandler* sm_messageHandler;
-    static cuttlefish_msgs::Header* sm_header;
+    static sepia::comm::Header* sm_header;
     static std::vector< char > sm_buffer;
 };
 }

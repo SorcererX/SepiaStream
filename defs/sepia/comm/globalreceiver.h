@@ -2,9 +2,8 @@
 #define SEPIA_COMM_GLOBALRECEIVER_H
 #include <vector>
 #include <unordered_set>
-#include <boost/thread.hpp>
+#include <thread>
 #include <boost/thread/locks.hpp>
-#include <messages.pb.h>
 #include <sepia/comm/observer.h>
 
 namespace sepia
@@ -29,17 +28,17 @@ public:
 protected:
     void own_thread();
     static void receiveData( char** a_buffer, size_t& remaining_bytes );
-    static const cuttlefish_msgs::Header* getLastHeader();
+    static const Header* getLastHeader();
 
 
 private:
     static MessageHandler* sm_messageHandler;
-    static cuttlefish_msgs::Header sm_header;
+    static Header sm_header;
     static std::vector< char > sm_buffer;
     static bool sm_isRouter;
     static size_t sm_lastBufferSize;
     static ObserverBase* sm_router;
-    boost::thread* m_thread;
+    std::thread* m_thread;
 };
 }
 }

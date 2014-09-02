@@ -2,7 +2,7 @@
 #define SEPIA_COMM_DISPATCHER_H
 #include <sepia/comm/messagesender.h>
 #include <sepia/comm/messagehandler.h>
-#include <messages.pb.h>
+#include "header.pb.h"
 #include <sepia/comm/observer.h>
 
 namespace sepia
@@ -36,7 +36,7 @@ namespace comm
 
          static void localSend( const MessageName* a_message )
          {
-             cuttlefish_msgs::Header header;
+             Header header;
              header.set_message_name( a_message->GetTypeName() );
              std::vector< char > msg_buffer;
              msg_buffer.resize( a_message->ByteSize() );

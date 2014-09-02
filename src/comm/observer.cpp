@@ -5,24 +5,26 @@
 #include <unistd.h>
 #include <boost/thread/mutex.hpp>
 #include <sepia/comm/globalreceiver.h>
+#include "internal.pb.h"
+#include "header.pb.h"
 
 namespace {
    void subscribe( const std::string a_messageName )
    {
-      cuttlefish_msgs::Subscribe msg;
+      sepia::comm::internal::Subscribe msg;
       msg.add_message_name( a_messageName );
       msg.set_source_node( getpid() );
       msg.set_source_router( 0 );
-      sepia::comm::Dispatcher< cuttlefish_msgs::Subscribe >::send( &msg );
+      sepia::comm::Dispatcher< sepia::comm::internal::Subscribe >::send( &msg );
    }
 
    void unsubscribe( const std::string a_messageName )
    {
-      cuttlefish_msgs::UnSubscribe msg;
+      sepia::comm::internal::UnSubscribe msg;
       msg.add_message_name( a_messageName );
       msg.set_source_node( getpid() );
       msg.set_source_router( 0 );
-      sepia::comm::Dispatcher< cuttlefish_msgs::UnSubscribe >::send( &msg );
+      sepia::comm::Dispatcher< sepia::comm::internal::UnSubscribe >::send( &msg );
    }
 
    int gettid()
@@ -109,7 +111,7 @@ void ObserverBase::removeObserver( const std::string a_name )
     stm_observers.erase( it );
 }
 
-bool ObserverBase::routeMessageToThreads( const cuttlefish_msgs::Header* a_header, char* a_buffer, const size_t a_size )
+bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size )
 {
     MessageNameMap::iterator it = sm_messageNameToThread.find( a_header->message_name() );
 
@@ -130,7 +132,7 @@ bool ObserverBase::routeMessageToThreads( const cuttlefish_msgs::Header* a_heade
     return true;
 }
 
-bool ObserverBase::routeToNode( unsigned int a_node, const cuttlefish_msgs::Header* a_header, char* a_buffer, const size_t a_size )
+bool ObserverBase::routeToNode( unsigned int a_node, const Header* a_header, char* a_buffer, const size_t a_size )
 {
     ThreadMap::iterator thread_it = sm_threadData.find( a_node );
 
@@ -154,7 +156,7 @@ bool ObserverBase::routeToNode( unsigned int a_node, const cuttlefish_msgs::Head
     return false;
 }
 
-bool ObserverBase::handleReceive( const cuttlefish_msgs::Header* a_header, const char* a_buffer, const size_t a_size )
+bool ObserverBase::handleReceive( const Header* a_header, const char* a_buffer, const size_t a_size )
 {
     ObserverMap::iterator it = stm_observers.find( a_header->message_name() );
     if( it != stm_observers.end() )

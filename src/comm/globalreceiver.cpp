@@ -1,7 +1,8 @@
 #include <sepia/comm/globalreceiver.h>
 #include <sepia/comm/messagehandler.h>
 #include <sepia/comm/dispatcher.h>
-#include <messages.pb.h>
+#include "internal.pb.h"
+#include "header.pb.h"
 #include <sepia/comm/observer.h>
 #include <boost/thread/thread.hpp>
 
@@ -11,7 +12,7 @@ namespace sepia
 namespace comm
 {
 MessageHandler* GlobalReceiver::sm_messageHandler = NULL;
-cuttlefish_msgs::Header GlobalReceiver::sm_header;
+Header GlobalReceiver::sm_header;
 std::vector< char > GlobalReceiver::sm_buffer;
 bool GlobalReceiver::sm_isRouter = false;
 size_t GlobalReceiver::sm_lastBufferSize = 0;
@@ -21,11 +22,11 @@ namespace
 {
     void id_notify( const std::string a_name )
     {
-        cuttlefish_msgs::IdNotify msg;
+        sepia::comm::internal::IdNotify msg;
         msg.set_pid( getpid() );
         msg.set_queue_name( std::string( "cuttlefish_incoming_" ) + std::to_string( getpid() ) );
         msg.set_node_name( a_name );
-        Dispatcher< cuttlefish_msgs::IdNotify >::send( &msg );
+        Dispatcher< sepia::comm::internal::IdNotify >::send( &msg );
     }
 
 }
@@ -41,7 +42,7 @@ bool GlobalReceiver::isRouter()
 
 void GlobalReceiver::start()
 {
-    m_thread = new boost::thread( boost::bind( &GlobalReceiver::own_thread, this ) );
+    m_thread = new std::thread( std::bind( &GlobalReceiver::own_thread, this ) );
 }
 
 void GlobalReceiver::initClient( const std::string& a_name )
@@ -96,7 +97,7 @@ void GlobalReceiver::receiveData( char** a_buffer, size_t& remaining_bytes )
     *a_buffer = sm_buffer.data() + offset + header_size;
 }
 
-const cuttlefish_msgs::Header* GlobalReceiver::getLastHeader()
+const Header* GlobalReceiver::getLastHeader()
 {
     return &sm_header;
 }
