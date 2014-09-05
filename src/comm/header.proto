@@ -1,0 +1,8 @@
+package sepia.comm;
+//option optimize_for = LITE_RUNTIME;
+
+message Header {
+   required uint32 source_node = 1;
+   required uint32 source_router = 2;
+   required string message_name = 3;
+}

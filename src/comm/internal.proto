@@ -1,0 +1,32 @@
+package sepia.comm.internal;
+//option optimize_for = LITE_RUNTIME;
+
+message Timestamp {
+   required int64 tv_sec = 1;
+   required int64 tv_usec = 2;
+}
+
+message Subscribe {
+    required uint32 source_node = 1;
+    required uint32 source_router = 2;
+    repeated string message_name = 3;
+}
+
+message UnSubscribe {
+    required uint32 source_node = 1;
+    required uint32 source_router = 2;
+    repeated string message_name = 3;
+}
+
+message IdResponse {
+   required uint32 pid = 1;
+}
+
+message IdNotify {
+    required uint32 pid = 1;
+    optional string node_name = 2;
+    required string queue_name = 3;
+}
+message ProcessDied {
+    required uint32 pid = 1;
+}
