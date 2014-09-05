@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <vector>
 #include <cstring>
-#include <imagewriter.h>
+#include <sepia/writer.h>
 
 int main( int argc, char** argv )
 {
@@ -13,7 +13,7 @@ int main( int argc, char** argv )
     {
         image[i] = i % 255;
     }
-    ImageWriter writer( "/image", 2, 1280, 1024, 8 );
+    sepia::Writer writer( "/image", 2, 1280, 1024, 8 );
     while( true )
     {
         std::cout << "." << std::flush;

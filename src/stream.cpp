@@ -1,8 +1,10 @@
-#include "imagestream.h"
+#include <sepia/stream.h>
 #include <sepia/databuffer.h>
 #include <iostream>
 
-ImageStream::ImageStream( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp )
+namespace sepia
+{
+Stream::Stream( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp )
 {
     m_element.data = NULL;
     m_element.info = NULL;
@@ -10,14 +12,14 @@ ImageStream::ImageStream( std::string name, u_int32_t images, u_int32_t width, u
     m_buffer = new sepia::DataBuffer( name, 16, required_size );
 }
 
-ImageStream::ImageStream( std::string name )
+Stream::Stream( std::string name )
 {
     m_element.data = NULL;
     m_element.info = NULL;
     m_buffer = new sepia::DataBuffer( name );
 }
 
-ImageStream::group_header_t* ImageStream::getGroupHeaderFromElement( char* element )
+Stream::group_header_t* Stream::getGroupHeaderFromElement( char* element )
 {
     if( element )
     {
@@ -30,13 +32,13 @@ ImageStream::group_header_t* ImageStream::getGroupHeaderFromElement( char* eleme
     }
 }
 
-ImageStream::group_header_t* ImageStream::getGroupHeader()
+Stream::group_header_t* Stream::getGroupHeader()
 {
     return getGroupHeaderFromElement( m_element.data );
 }
 
 
-char* ImageStream::getHeaderAddressFromElement( char* element, size_t id )
+char* Stream::getHeaderAddressFromElement( char* element, size_t id )
 {
     if( element )
     {
@@ -48,7 +50,7 @@ char* ImageStream::getHeaderAddressFromElement( char* element, size_t id )
     }
 }
 
-char* ImageStream::getHeaderAddress( size_t id )
+char* Stream::getHeaderAddress( size_t id )
 {
     if( id < getGroupHeader()->count )
     {
@@ -61,7 +63,7 @@ char* ImageStream::getHeaderAddress( size_t id )
 }
 
 
-char* ImageStream::getAddress( size_t id )
+char* Stream::getAddress( size_t id )
 {
     char* hdr = getHeaderAddress( id );
 
@@ -75,7 +77,7 @@ char* ImageStream::getAddress( size_t id )
     }
 }
 
-ImageStream::image_header_t* ImageStream::getHeader( size_t id )
+Stream::image_header_t* Stream::getHeader( size_t id )
 {
     char* hdr = getHeaderAddress( id );
     if( hdr )
@@ -89,7 +91,7 @@ ImageStream::image_header_t* ImageStream::getHeader( size_t id )
     }
 }
 
-size_t ImageStream::getSize( size_t id )
+size_t Stream::getSize( size_t id )
 {
     image_header_t* header = getHeader( id );
     if( header )
@@ -102,12 +104,12 @@ size_t ImageStream::getSize( size_t id )
     }
 }
 
-size_t ImageStream::getMaxSize()
+size_t Stream::getMaxSize()
 {
     return getGroupHeader()->max_size;
 }
 
-bool ImageStream::setSize( size_t id, u_int32_t size )
+bool Stream::setSize( size_t id, u_int32_t size )
 {
     image_header_t* header = getHeader( id );
     if( header )
@@ -119,4 +121,5 @@ bool ImageStream::setSize( size_t id, u_int32_t size )
         }
     }
     return false;
+}
 }
