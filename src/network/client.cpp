@@ -71,7 +71,7 @@ void Client::own_thread()
     }
     std::cout << "DEBUG: " << "images: " << images << " w: " << width << " h: " << height << " bpp: " << bpp << std::endl;
 
-    sepia::Writer data( m_name + "_TEST", images, width, height, bpp );
+    sepia::Writer data( m_name, images, width, height, bpp );
 
     while( !m_terminate )
     {
