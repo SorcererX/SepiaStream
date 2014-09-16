@@ -43,14 +43,21 @@ set( SEPIA_INCLUDES
 set( UTIL_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/util/threadobject.h )
 
-set( HEADER_FILES ${NETWORK_INCLUDES} ${SEPIA_INCLUDES} ${COMM_INCLUDES} ${UTIL_INCLUDES} )
+set( COMPRESSION_INCLUDES
+    ${CMAKE_SOURCE_DIR}/defs/sepia/compression/common.h
+    ${CMAKE_SOURCE_DIR}/defs/sepia/compression/decompress.h
+    ${CMAKE_SOURCE_DIR}/defs/sepia/compression/compress.h )
+
+set( HEADER_FILES ${NETWORK_INCLUDES} ${SEPIA_INCLUDES} ${COMM_INCLUDES} ${UTIL_INCLUDES} ${COMPRESSION_INCLUDES} )
 aux_source_directory(src SRC_LIST)
 aux_source_directory(src/network SRC_LIST)
 aux_source_directory(src/util SRC_LIST)
+aux_source_directory(src/compression SRC_LIST)
 include_directories(defs)
 include_directories(defs/sepia)
 include_directories(defs/sepia/network)
 include_directories(defs/sepia/util)
+include_directories(defs/sepia/compression)
 add_library( ${PROJECT_NAME} ${SRC_LIST} ${HEADER_FILES} ${PROTO_SRCS} ${PROTO_HDRS} )
 target_link_libraries( ${PROJECT_NAME} -lrt )
 
@@ -65,3 +72,4 @@ install( TARGETS ${PROJECT_NAME} DESTINATION lib )
 install( FILES ${SEPIA_INCLUDES}   DESTINATION include/sepia )
 install( FILES ${NETWORK_INCLUDES} DESTINATION include/sepia/network )
 install( FILES ${UTIL_INCLUDES} DESTINATION include/sepia/util )
+install( FILES ${COMPRESSION_INCLUDES} DESTINATION include/sepia/compression )
