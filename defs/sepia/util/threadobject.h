@@ -1,5 +1,5 @@
-#ifndef CUTTLEFISH_NETWORK_H
-#define CUTTLEFISH_NETWORK_H
+#ifndef SEPIA_UTIL_THREADOBJECT_H
+#define SEPIA_UTIL_THREADOBJECT_H
 #include <atomic>
 #include <thread>
 
@@ -21,4 +21,4 @@ namespace util
     };
 }
 }
-#endif // CUTTLEFISH_NETWORK_H
+#endif // SEPIA_UTIL_THREADOBJECT_H
