@@ -41,12 +41,14 @@ set( SEPIA_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/sharedmemory.h
     ${CMAKE_SOURCE_DIR}/defs/sepia/semaphore.h )
 set( UTIL_INCLUDES
-    ${CMAKE_SOURCE_DIR}/defs/sepia/util/threadobject.h )
+    ${CMAKE_SOURCE_DIR}/defs/sepia/util/threadobject.h
+    ${CMAKE_SOURCE_DIR}/defs/sepia/util/helper.h )
 
 set( COMPRESSION_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/compression/common.h
     ${CMAKE_SOURCE_DIR}/defs/sepia/compression/decompress.h
-    ${CMAKE_SOURCE_DIR}/defs/sepia/compression/compress.h )
+    ${CMAKE_SOURCE_DIR}/defs/sepia/compression/compress.h
+    ${CMAKE_SOURCE_DIR}/defs/sepia/compression/enc3b11b.h )
 
 set( HEADER_FILES ${NETWORK_INCLUDES} ${SEPIA_INCLUDES} ${COMM_INCLUDES} ${UTIL_INCLUDES} ${COMPRESSION_INCLUDES} )
 aux_source_directory(src SRC_LIST)

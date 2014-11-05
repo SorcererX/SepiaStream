@@ -19,9 +19,10 @@ Decompress::~Decompress()
     inflateEnd( &m_stream );
 }
 
-void Decompress::perform()
+size_t Decompress::perform()
 {
     inflate( &m_stream, Z_FINISH );
+    return 0; // TODO: FIX
 }
 
 }

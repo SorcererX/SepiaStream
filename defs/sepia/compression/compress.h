@@ -13,7 +13,7 @@ public:
     Compress( Common::Method a_method, int a_level );
     ~Compress();
 
-    void perform();
+    size_t perform();
 };
 
 }
