@@ -28,6 +28,7 @@ public:
         u_int32_t gpi_level;
         u_int32_t black_level;
         u_int32_t bpp;
+        u_int32_t channels;
     };
 
     char* getAddress( size_t id );
