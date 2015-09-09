@@ -74,6 +74,11 @@ thread_local ObserverBase* ObserverBase::stm_router = NULL;
 
 ObserverBase::ObserverBase()
 {
+    sm_globalMutex = boost::shared_ptr< boost::mutex >( new boost::mutex() );
+}
+
+void ObserverBase::initReceiver()
+{
     if( !stm_ownData )
     {
         ThreadMap::iterator it = sm_threadData.find( gettid() );
@@ -83,12 +88,12 @@ ObserverBase::ObserverBase()
             sm_threadData[ gettid() ] = tmp;
         }
         stm_ownData = &sm_threadData[ gettid() ];
-        //stm_ownData->mutex = boost::shared_ptr< boost::mutex >( new boost::mutex );
-        //stm_ownData->cond = boost::shared_ptr< boost::condition_variable >( new boost::condition_variable );
-        stm_ownData->barrier = boost::shared_ptr< boost::barrier > ( new boost::barrier( 2 ) );
+        stm_ownData->cond = boost::shared_ptr< boost::condition_variable >( new boost::condition_variable );
+        //stm_ownData->barrier = boost::shared_ptr< boost::barrier > ( new boost::barrier( 2 ) );
         stm_ownData->mutex = boost::shared_ptr< boost::mutex >( new boost::mutex() );
         stm_ownData->buffer.reserve( 1024 );
         stm_ownData->buffer.resize( 1024 );
+        stm_ownData->data_ready = false;
     }
 }
 
@@ -164,20 +169,21 @@ bool ObserverBase::routeToNode( unsigned int a_node, const Header* a_header, cha
     if( thread_it != sm_threadData.end() )
     {
         ThreadMessageData* thr = &thread_it->second;
-        thr->mutex->lock();
-        //boost::unique_lock< boost::mutex > lock( *thr->mutex );
-        thr->barrier->wait(); // routeToNode critical section start
-
-        memcpy( thr->buffer.data(), a_buffer, a_size );
-        thr->header = *a_header;
-        thr->length = a_size;
-
-        thr->barrier->wait(); // routeToNode critical section end
-        thr->barrier->wait(); // ThreadReceiver critical section end
-        thr->mutex->unlock();
-        //thr->cond->notify_all();
+        {
+            boost::unique_lock< boost::mutex > lock( *thr->mutex );
+            while( thr->data_ready )
+            {
+                thr->cond->wait( lock );
+            }
+            memcpy( thr->buffer.data(), a_buffer, a_size );
+            thr->header = *a_header;
+            thr->length = a_size;
+            thr->data_ready = true;
+        }
+        thr->cond->notify_one();
         return true;
     }
+
     return false;
 }
 
@@ -193,7 +199,7 @@ bool ObserverBase::handleReceive( const Header* a_header, const char* a_buffer, 
     {
         if( stm_router )
         {
-            stm_router->process( a_header, GlobalReceiver::getLastMessageBuffer(), GlobalReceiver::getLastMessageBufferSize() );
+            stm_router->process( a_header, a_buffer, a_size );
             return true;
         }
         return false;
@@ -208,15 +214,14 @@ bool ObserverBase::threadReceiver()
         std::cerr << "threadReceiver() - no observer(s) attached to this thread!" << std::endl;
         return false;
     }
-    stm_ownData->barrier->wait(); // routeToNode critical section start
-    stm_ownData->barrier->wait(); // routeToNode critical section end
-    //boost::unique_lock< boost::mutex > lock( *stm_ownData->mutex );
-    //stm_ownData->cond->wait( lock );
+    boost::unique_lock< boost::mutex > lock( *stm_ownData->mutex );
+    while( !stm_ownData->data_ready )
+    {
+        stm_ownData->cond->wait( lock );
+    }
+    stm_ownData->data_ready = false;
     bool retval = handleReceive( &stm_ownData->header, stm_ownData->buffer.data(), stm_ownData->length );
-
-    // TODO: temporary workaround (essentially disables ability to handle messages in parallel with several threads.
-    //       This means only one thread is able to do processing at once.
-    stm_ownData->barrier->wait(); // threadReceiver critical section end
+    stm_ownData->cond->notify_all();
     return retval;
 }
 

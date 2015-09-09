@@ -70,7 +70,7 @@ void ProcessMonitor::own_thread()
             if( retval != 0 )
             {
                 msg.set_pid( *it );
-                m_mutex.unlock();
+                //m_mutex.unlock();
                 sepia::comm::Dispatcher< sepia::comm::internal::ProcessDied >::localSend( &msg );
                 break;
             }

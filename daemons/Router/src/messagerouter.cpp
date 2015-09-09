@@ -35,6 +35,10 @@ MessageRouter::MessageRouter( const std::string a_incomingQueueName )
       m_currentNodeId( 0 ),
       m_routerId( 0 )
 {
+    sepia::comm::Observer< sepia::comm::internal::IdNotify >::initReceiver();
+    sepia::comm::Observer< sepia::comm::internal::Subscribe >::initReceiver();
+    sepia::comm::Observer< sepia::comm::internal::UnSubscribe >::initReceiver();
+    sepia::comm::Observer< sepia::comm::internal::ProcessDied >::initReceiver();
 }
 
 MessageRouter::~MessageRouter()

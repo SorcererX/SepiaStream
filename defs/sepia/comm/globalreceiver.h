@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <thread>
 #include <boost/thread/locks.hpp>
+#include <sepia/util/threadobject.h>
 #include <sepia/comm/observer.h>
 
 namespace sepia
@@ -13,7 +14,7 @@ namespace comm
 class MessageHandler;
 
 
-class GlobalReceiver
+class GlobalReceiver : public sepia::util::ThreadObject
 {
 public:
     GlobalReceiver();
@@ -38,7 +39,6 @@ private:
     static bool sm_isRouter;
     static size_t sm_lastBufferSize;
     static ObserverBase* sm_router;
-    std::thread* m_thread;
 };
 }
 }

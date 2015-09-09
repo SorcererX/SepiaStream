@@ -140,7 +140,7 @@ size_t GlobalReceiver::getLastMessageBufferSize()
 
 void GlobalReceiver::own_thread()
 {
-    while( true )
+    while( !m_terminate )
     {
         size_t remaining_bytes = 0;
         char* msg_ptr = NULL;

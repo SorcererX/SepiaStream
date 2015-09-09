@@ -42,6 +42,10 @@ namespace comm
              msg_buffer.resize( a_message->ByteSize() );
              a_message->SerializeToArray( msg_buffer.data(), msg_buffer.size() );
              bool handled = ObserverBase::routeMessageToThreads( &header, msg_buffer.data(), msg_buffer.size() );
+             if( !handled )
+             {
+                 std::cout << "Dispatcher::localSend - not handled." << std::endl;
+             }
          }
 
       private:

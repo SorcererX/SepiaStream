@@ -1,5 +1,5 @@
 project(SepiaStream)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O0")
 
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
 set(BUILD_COMM ON CACHE BOOL "Include Communication library (requires Boost and Protobuf)")
