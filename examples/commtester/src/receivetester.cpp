@@ -28,6 +28,15 @@ void ReceiveTester::own_thread()
     }
 }
 
+void ReceiveTester::stop()
+{
+    if( m_thread )
+    {
+        sepia::comm::ObserverBase::stopThreadReceiver( m_thread->get_id() );
+    }
+    sepia::util::ThreadObject::stop();
+}
+
 void ReceiveTester::receive( const commtester_msgs::Test* msg )
 {
     m_messageCount++;

@@ -25,8 +25,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <sepia/comm/observer.h>
 #include <sepia/comm/dispatcher.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <sepia/comm/globalreceiver.h>
 #include "internal.pb.h"
@@ -50,11 +48,6 @@ namespace {
       msg.set_source_router( 0 );
       sepia::comm::Dispatcher< sepia::comm::internal::UnSubscribe >::send( &msg );
    }
-
-   int gettid()
-   {
-       return syscall( SYS_gettid );
-   }
 }
 
 namespace sepia
@@ -69,7 +62,7 @@ ObserverBase::MessageNameMap ObserverBase::sm_messageNameToThread;
 thread_local ObserverBase::ThreadMessageData* ObserverBase::stm_ownData = NULL;
 std::shared_ptr< std::mutex > ObserverBase::sm_globalMutex = std::shared_ptr< std::mutex >( new std::mutex() );
 bool ObserverBase::sm_debugEnabled = false;
-std::unordered_set< unsigned int > ObserverBase::sm_routerThreads;
+std::unordered_set< std::thread::id > ObserverBase::sm_routerThreads;
 thread_local ObserverBase* ObserverBase::stm_router = NULL;
 
 ObserverBase::ObserverBase()
@@ -86,23 +79,35 @@ bool ObserverBase::debugEnabled()
     return sm_debugEnabled;
 }
 
+void ObserverBase::stopThreadReceiver( std::thread::id a_threadId )
+{
+    ThreadMap::iterator it = sm_threadData.find( a_threadId );
+
+    if( it != sm_threadData.end() )
+    {
+        it->second.terminateReceiver = true;
+        it->second.cond->notify_all();
+    }
+}
+
 void ObserverBase::initReceiver()
 {
     if( !stm_ownData )
     {
-        ThreadMap::iterator it = sm_threadData.find( gettid() );
+        ThreadMap::iterator it = sm_threadData.find( std::this_thread::get_id() );
         if( it == sm_threadData.end() )
         {
             ThreadMessageData tmp;
-            sm_threadData[ gettid() ] = tmp;
+            sm_threadData[ std::this_thread::get_id() ] = tmp;
         }
-        stm_ownData = &sm_threadData[ gettid() ];
+        stm_ownData = &sm_threadData[ std::this_thread::get_id() ];
         stm_ownData->cond = std::shared_ptr< std::condition_variable >( new std::condition_variable );
         stm_ownData->mutex = std::shared_ptr< std::mutex >( new std::mutex() );
         stm_ownData->buffer.reserve( 1024 );
         stm_ownData->buffer.resize( 1024 );
         stm_ownData->data_ready = false;
     }
+    stm_ownData->terminateReceiver = false;
 }
 
 void ObserverBase::addObserver( const std::string a_name, ObserverBase* a_Observer )
@@ -111,7 +116,7 @@ void ObserverBase::addObserver( const std::string a_name, ObserverBase* a_Observ
 
    MessageNameMap::iterator it = sm_messageNameToThread.find( a_name );
 
-   unsigned int thread_id = gettid();
+   std::thread::id thread_id = std::this_thread::get_id();
 
    if( it != sm_messageNameToThread.end() )
    {
@@ -119,7 +124,7 @@ void ObserverBase::addObserver( const std::string a_name, ObserverBase* a_Observ
    }
    else
    {
-       std::unordered_set< unsigned int > temp;
+       std::unordered_set< std::thread::id > temp;
        temp.insert( thread_id );
        sm_messageNameToThread[ a_name ] = temp;
        if( !GlobalReceiver::isRouter() )
@@ -131,7 +136,7 @@ void ObserverBase::addObserver( const std::string a_name, ObserverBase* a_Observ
 
 void ObserverBase::addRouter( ObserverBase* a_Observer )
 {
-    sm_routerThreads.insert( gettid() );
+    sm_routerThreads.insert( std::this_thread::get_id() );
     if( !stm_router )
     {
         stm_router = a_Observer;
@@ -155,14 +160,14 @@ bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer
 
     if( it != sm_messageNameToThread.end() )
     {
-        for( unsigned int node : it->second )
+        for( std::thread::id node : it->second )
         {
             routeToNode( node, a_header, a_buffer, a_size );
         }
     }
     else
     {
-        for( unsigned int node : sm_routerThreads )
+        for( std::thread::id node : sm_routerThreads )
         {
             routeToNode( node, a_header, a_buffer, a_size );
         }
@@ -170,7 +175,7 @@ bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer
     return true;
 }
 
-bool ObserverBase::routeToNode( unsigned int a_node, const Header* a_header, char* a_buffer, const size_t a_size )
+bool ObserverBase::routeToNode( std::thread::id a_node, const Header* a_header, char* a_buffer, const size_t a_size )
 {
     ThreadMap::iterator thread_it = sm_threadData.find( a_node );
 
@@ -179,10 +184,16 @@ bool ObserverBase::routeToNode( unsigned int a_node, const Header* a_header, cha
         ThreadMessageData* thr = &thread_it->second;
         {
             std::unique_lock< std::mutex > lock( *thr->mutex );
-            while( thr->data_ready )
+            while( thr->data_ready && !thr->terminateReceiver )
             {
                 thr->cond->wait( lock );
             }
+
+            if( thr->terminateReceiver )
+            {
+                return false;
+            }
+
             memcpy( thr->buffer.data(), a_buffer, a_size );
             thr->header = *a_header;
             thr->length = a_size;
@@ -223,10 +234,16 @@ bool ObserverBase::threadReceiver()
         return false;
     }
     std::unique_lock< std::mutex > lock( *stm_ownData->mutex );
-    while( !stm_ownData->data_ready )
+    while( !stm_ownData->data_ready && !stm_ownData->terminateReceiver )
     {
         stm_ownData->cond->wait( lock );
     }
+
+    if( stm_ownData->terminateReceiver )
+    {
+        return false;
+    }
+
     stm_ownData->data_ready = false;
     bool retval = handleReceive( &stm_ownData->header, stm_ownData->buffer.data(), stm_ownData->length );
     stm_ownData->cond->notify_all();

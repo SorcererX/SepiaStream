@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include <unordered_set>
 #include <iostream>
+#include <thread>
 
 namespace sepia
 {
@@ -24,8 +25,10 @@ public:
         int32_t length;
         Header header;
         bool data_ready;
+        bool terminateReceiver;
     } ThreadMessageData;
     static bool threadReceiver();
+    static void stopThreadReceiver( std::thread::id a_threadId );
     static void enableDebug( bool a_enable );
     static bool routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size );
     static bool debugEnabled();
@@ -37,16 +40,16 @@ protected:
     void removeObserver( const std::string a_name );
     void addRouter( ObserverBase* a_Observer );
     ObserverBase();
-    static bool routeToNode( unsigned int node, const Header* a_header, char* a_buffer, const size_t a_size );
+    static bool routeToNode( std::thread::id a_node, const Header* a_header, char* a_buffer, const size_t a_size );
     static bool handleReceive( const Header* a_header, const char* a_buffer, const size_t a_size );
 
 private:
 
     typedef std::map< std::string, ObserverBase* > ObserverMap;
-    typedef std::map< int, ThreadMessageData > ThreadMap;
-    typedef std::map< std::string, std::unordered_set< unsigned int > > MessageNameMap;
+    typedef std::map< std::thread::id, ThreadMessageData > ThreadMap;
+    typedef std::map< std::string, std::unordered_set< std::thread::id > > MessageNameMap;
     static MessageNameMap sm_messageNameToThread;
-    static std::unordered_set< unsigned int > sm_routerThreads;
+    static std::unordered_set< std::thread::id > sm_routerThreads;
     static thread_local ObserverMap stm_observers;
     static thread_local ThreadMessageData* stm_ownData;
     static ThreadMap sm_threadData;
