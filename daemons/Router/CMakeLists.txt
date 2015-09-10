@@ -10,4 +10,4 @@ set( DAEMON_HEADER_FILES
 add_executable( ${PROJECT_NAME} ${DAEMON_SRC_LIST} ${DAEMON_HEADER_FILES} )
 add_dependencies( ${PROJECT_NAME} SepiaStream )
 target_link_libraries( ${PROJECT_NAME} SepiaStream )
-target_link_libraries( ${PROJECT_NAME} -lboost_system -lboost_thread -lrt )
+target_link_libraries( ${PROJECT_NAME} -lrt )

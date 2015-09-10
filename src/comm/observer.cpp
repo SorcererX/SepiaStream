@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <boost/thread/mutex.hpp>
 #include <sepia/comm/globalreceiver.h>
 #include "internal.pb.h"
 #include "header.pb.h"
@@ -68,7 +67,7 @@ thread_local ObserverBase::ObserverMap ObserverBase::stm_observers;
 ObserverBase::ThreadMap ObserverBase::sm_threadData;
 ObserverBase::MessageNameMap ObserverBase::sm_messageNameToThread;
 thread_local ObserverBase::ThreadMessageData* ObserverBase::stm_ownData = NULL;
-boost::shared_ptr< boost::mutex > ObserverBase::sm_globalMutex = boost::shared_ptr< boost::mutex >( new boost::mutex() );
+std::shared_ptr< std::mutex > ObserverBase::sm_globalMutex = std::shared_ptr< std::mutex >( new std::mutex() );
 bool ObserverBase::sm_debugEnabled = false;
 std::unordered_set< unsigned int > ObserverBase::sm_routerThreads;
 thread_local ObserverBase* ObserverBase::stm_router = NULL;
@@ -98,8 +97,8 @@ void ObserverBase::initReceiver()
             sm_threadData[ gettid() ] = tmp;
         }
         stm_ownData = &sm_threadData[ gettid() ];
-        stm_ownData->cond = boost::shared_ptr< boost::condition_variable >( new boost::condition_variable );
-        stm_ownData->mutex = boost::shared_ptr< boost::mutex >( new boost::mutex() );
+        stm_ownData->cond = std::shared_ptr< std::condition_variable >( new std::condition_variable );
+        stm_ownData->mutex = std::shared_ptr< std::mutex >( new std::mutex() );
         stm_ownData->buffer.reserve( 1024 );
         stm_ownData->buffer.resize( 1024 );
         stm_ownData->data_ready = false;
@@ -179,7 +178,7 @@ bool ObserverBase::routeToNode( unsigned int a_node, const Header* a_header, cha
     {
         ThreadMessageData* thr = &thread_it->second;
         {
-            boost::unique_lock< boost::mutex > lock( *thr->mutex );
+            std::unique_lock< std::mutex > lock( *thr->mutex );
             while( thr->data_ready )
             {
                 thr->cond->wait( lock );
@@ -223,7 +222,7 @@ bool ObserverBase::threadReceiver()
         std::cerr << "threadReceiver() - no observer(s) attached to this thread!" << std::endl;
         return false;
     }
-    boost::unique_lock< boost::mutex > lock( *stm_ownData->mutex );
+    std::unique_lock< std::mutex > lock( *stm_ownData->mutex );
     while( !stm_ownData->data_ready )
     {
         stm_ownData->cond->wait( lock );

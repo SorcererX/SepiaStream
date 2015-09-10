@@ -3,7 +3,6 @@
 #include <vector>
 #include <unordered_set>
 #include <thread>
-#include <boost/thread/locks.hpp>
 #include <sepia/util/threadobject.h>
 #include <sepia/comm/observer.h>
 

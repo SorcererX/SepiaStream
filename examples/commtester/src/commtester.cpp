@@ -4,7 +4,7 @@
 #include "../defs/receivetester.hpp"
 #include "commtester_messages.pb.h"
 #include <iostream>
-#include <unistd.h>
+#include <chrono>
 
 
 int main()
@@ -27,16 +27,16 @@ int main()
 
     commtester_msgs::Test message;
 
+    auto now = std::chrono::system_clock::now();
     struct timeval time_value;
     usleep( 500000 );
     for( int i = 0; i < 1000; i++ )
     {
         message.set_seq_no( i );
-        gettimeofday( &time_value, 0 );
-        message.set_time( time_value.tv_sec );
+        now = std::chrono::system_clock::now();
+        message.set_time( now.time_since_epoch().count() );
         sepia::comm::Dispatcher< commtester_msgs::Test >::localSend( &message );
     }
-    //usleep( 1000 );
 
     for( int i = 0; i < m_receivers.size(); i++ )
     {

@@ -29,8 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internal.pb.h"
 #include "header.pb.h"
 #include <sepia/comm/observer.h>
-#include <boost/thread/thread.hpp>
-
 
 namespace sepia
 {

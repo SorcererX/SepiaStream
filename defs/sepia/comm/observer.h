@@ -4,10 +4,10 @@
 #include <map>
 #include <vector>
 #include "header.pb.h"
-#include <boost/thread.hpp>
-#include <boost/thread/locks.hpp>
+#include <mutex>
+#include <condition_variable>
 #include <unordered_set>
-
+#include <iostream>
 
 namespace sepia
 {
@@ -18,9 +18,8 @@ class ObserverBase
 {
 public:
     typedef struct {
-        boost::shared_ptr< boost::mutex > mutex;
-        boost::shared_ptr< boost::condition_variable > cond;
-        //boost::shared_ptr< boost::barrier > barrier;
+        std::shared_ptr< std::mutex > mutex;
+        std::shared_ptr< std::condition_variable > cond;
         std::vector< char > buffer;
         int32_t length;
         Header header;
@@ -51,7 +50,7 @@ private:
     static thread_local ObserverMap stm_observers;
     static thread_local ThreadMessageData* stm_ownData;
     static ThreadMap sm_threadData;
-    static boost::shared_ptr< boost::mutex > sm_globalMutex;
+    static std::shared_ptr< std::mutex > sm_globalMutex;
     static thread_local ObserverBase* stm_router;
     static bool sm_debugEnabled;
 };
