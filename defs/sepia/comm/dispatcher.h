@@ -16,7 +16,10 @@ namespace comm
          static void send( const MessageName* a_message )
          {
             sm_header->set_message_name( a_message->GetTypeName() );
-            std::cout << "Dispatching: " << a_message->GetTypeName() << " " << a_message->ShortDebugString() << std::endl;
+            if( ObserverBase::debugEnabled() )
+            {
+                std::cout << "Dispatching: " << a_message->GetTypeName() << " " << a_message->ShortDebugString() << std::endl;
+            }
             // reserve space for size of header.
             size_t send_bytes = sm_header->ByteSize();
             size_t accum_bytes = sizeof( size_t );
@@ -49,7 +52,6 @@ namespace comm
          }
 
       private:
-
    };
 }
 }

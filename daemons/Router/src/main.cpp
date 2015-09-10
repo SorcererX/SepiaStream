@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main()
 {
+    sepia::comm::ObserverBase::enableDebug( true );
     sepia::comm::initRouter();
 
     MessageRouter router( "cuttlefish_outgoing" );

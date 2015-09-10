@@ -68,13 +68,23 @@ thread_local ObserverBase::ObserverMap ObserverBase::stm_observers;
 ObserverBase::ThreadMap ObserverBase::sm_threadData;
 ObserverBase::MessageNameMap ObserverBase::sm_messageNameToThread;
 thread_local ObserverBase::ThreadMessageData* ObserverBase::stm_ownData = NULL;
-boost::shared_ptr< boost::mutex > ObserverBase::sm_globalMutex;
+boost::shared_ptr< boost::mutex > ObserverBase::sm_globalMutex = boost::shared_ptr< boost::mutex >( new boost::mutex() );
+bool ObserverBase::sm_debugEnabled = false;
 std::unordered_set< unsigned int > ObserverBase::sm_routerThreads;
 thread_local ObserverBase* ObserverBase::stm_router = NULL;
 
 ObserverBase::ObserverBase()
 {
-    sm_globalMutex = boost::shared_ptr< boost::mutex >( new boost::mutex() );
+}
+
+void ObserverBase::enableDebug( bool a_enable )
+{
+    sm_debugEnabled = a_enable;
+}
+
+bool ObserverBase::debugEnabled()
+{
+    return sm_debugEnabled;
 }
 
 void ObserverBase::initReceiver()
@@ -89,7 +99,6 @@ void ObserverBase::initReceiver()
         }
         stm_ownData = &sm_threadData[ gettid() ];
         stm_ownData->cond = boost::shared_ptr< boost::condition_variable >( new boost::condition_variable );
-        //stm_ownData->barrier = boost::shared_ptr< boost::barrier > ( new boost::barrier( 2 ) );
         stm_ownData->mutex = boost::shared_ptr< boost::mutex >( new boost::mutex() );
         stm_ownData->buffer.reserve( 1024 );
         stm_ownData->buffer.resize( 1024 );

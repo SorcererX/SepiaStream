@@ -27,7 +27,9 @@ public:
         bool data_ready;
     } ThreadMessageData;
     static bool threadReceiver();
+    static void enableDebug( bool a_enable );
     static bool routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size );
+    static bool debugEnabled();
 
 protected:
     void initReceiver();
@@ -51,6 +53,7 @@ private:
     static ThreadMap sm_threadData;
     static boost::shared_ptr< boost::mutex > sm_globalMutex;
     static thread_local ObserverBase* stm_router;
+    static bool sm_debugEnabled;
 };
 
 
@@ -73,7 +76,10 @@ protected:
         if( !a_header )
         {
             m_message.ParseFromArray( a_buffer, a_size );
-            std::cout << "Observer: " << m_message.GetTypeName() << " " << m_message.ShortDebugString() << std::endl;
+            if( ObserverBase::debugEnabled() )
+            {
+                std::cout << "Observer: " << m_message.GetTypeName() << " " << m_message.ShortDebugString() << std::endl;
+            }
             receive( &m_message );
         }
     }
