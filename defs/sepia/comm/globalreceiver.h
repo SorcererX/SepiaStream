@@ -24,6 +24,7 @@ public:
     static const char* getLastMessageBuffer(); // should probably be hidden somehow.
     static size_t getLastMessageBufferSize();
     void start();
+    void stop();
 
 protected:
     void own_thread();

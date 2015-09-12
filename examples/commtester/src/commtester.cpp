@@ -18,7 +18,7 @@ int main()
     receiver.start();
 
     std::vector< ReceiveTester > m_receivers;
-    m_receivers.resize( 10 );
+    m_receivers.resize( 20 );
 
     for( int i = 0; i < m_receivers.size(); i++ )
     {
@@ -29,15 +29,20 @@ int main()
 
     auto now = std::chrono::system_clock::now();
     struct timeval time_value;
-    usleep( 500000 );
-    for( int i = 0; i < 1000; i++ )
+
+    std::cout << "Waiting 2 seconds after starting receivers before starting send..." << std::endl;
+    usleep( 200000 );
+    std::cout << "Starting send." << std::endl;
+    for( int i = 0; i < 100000; i++ )
     {
         message.set_seq_no( i );
         now = std::chrono::system_clock::now();
         message.set_time( now.time_since_epoch().count() );
         sepia::comm::Dispatcher< commtester_msgs::Test >::localSend( &message );
     }
-
+    std::cout << "Send completed." << std::endl;
+    std::cout << "Waiting 1 second after sending last message before closing receivers.." << std::endl;
+    usleep( 1000000 );
     for( int i = 0; i < m_receivers.size(); i++ )
     {
         m_receivers[ i ].stop();

@@ -26,6 +26,7 @@ void ReceiveTester::own_thread()
     {
         sepia::comm::ObserverBase::threadReceiver();
     }
+    destroyReceiver();
 }
 
 void ReceiveTester::stop()
@@ -40,7 +41,7 @@ void ReceiveTester::stop()
 void ReceiveTester::receive( const commtester_msgs::Test* msg )
 {
     m_messageCount++;
-    std::cout << "Got " << m_messageCount << " message(s)." << std::endl;
+    //std::cout << "Got " << m_messageCount << " message(s)." << std::endl;
 }
 
 int ReceiveTester::getMessageCount()

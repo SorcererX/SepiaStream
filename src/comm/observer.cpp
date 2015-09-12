@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sepia/comm/globalreceiver.h>
 #include "internal.pb.h"
 #include "header.pb.h"
+#include <iostream>
 
 namespace {
    void subscribe( const std::string a_messageName )
@@ -143,15 +144,39 @@ void ObserverBase::addRouter( ObserverBase* a_Observer )
     }
 }
 
-
 void ObserverBase::removeObserver( const std::string a_name )
 {
-    ObserverMap::iterator it = stm_observers.find( a_name );
-    if( !GlobalReceiver::isRouter() )
+    MessageNameMap::iterator message_it = sm_messageNameToThread.find( a_name );
+
+    if( message_it != sm_messageNameToThread.end() )
     {
-       unsubscribe( a_name );
+        std::unordered_set< std::thread::id >::const_iterator thread_it = message_it->second.find( std::this_thread::get_id() );
+
+        if( thread_it != message_it->second.end() )
+        {
+            message_it->second.erase( thread_it );
+
+            ObserverMap::iterator observer_it = stm_observers.find( a_name );
+
+            if( observer_it != stm_observers.end() )
+            {
+                stm_observers.erase( observer_it );
+            }
+
+            if( message_it->second.size() == 0 )
+            {
+                sm_messageNameToThread.erase( message_it );
+                if( !GlobalReceiver::isRouter() )
+                {
+                    unsubscribe( a_name );
+                }
+            }
+        }
+        else
+        {
+            std::cout << "ObserverBase::removeObserver - attempted to remove message not assigned to current thread." << std::endl;
+        }
     }
-    stm_observers.erase( it );
 }
 
 bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size )

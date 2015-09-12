@@ -53,6 +53,11 @@ MessageHandler::~MessageHandler()
     }
 }
 
+void MessageHandler::close()
+{
+    message_queue::remove( m_name.c_str() );
+}
+
 void MessageHandler::create()
 {
     if( m_queue == NULL )
@@ -75,10 +80,16 @@ void MessageHandler::open()
     }
 }
 
-void MessageHandler::getMessage( char* a_buffer, size_t& a_receivedBytes )
+bool MessageHandler::getMessage( char* a_buffer, size_t& a_receivedBytes )
 {
     unsigned int priority = 0;
-    m_queue->receive( a_buffer, m_maxMessageSize, a_receivedBytes, priority );
+    boost::posix_time::time_duration delay = boost::posix_time::seconds( 1 );
+    boost::posix_time::ptime abs_time = boost::posix_time::microsec_clock::universal_time();
+
+    abs_time += delay;
+
+    return m_queue->timed_receive( a_buffer, m_maxMessageSize, a_receivedBytes, priority, abs_time );
+    //m_queue->receive( a_buffer, m_maxMessageSize, a_receivedBytes, priority );
 }
 
 void MessageHandler::putMessage( const char* a_buffer, const size_t& a_bytes )

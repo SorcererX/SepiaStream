@@ -66,7 +66,7 @@ public:
     ~Observer() {
         if( m_initialized )
         {
-            ObserverBase::removeObserver( MessageName::default_instance().GetTypeName() );
+            std::cerr << "Observer: forgot to destroy receiver before deconstruction!" << std::endl;
         }
     }
 
@@ -93,6 +93,17 @@ protected:
         ObserverBase::addObserver( MessageName::default_instance().GetTypeName(), this );
         ObserverBase::initReceiver();
         sm_globalMutex->unlock();
+    }
+
+    void destroyReceiver()
+    {
+        if( m_initialized )
+        {
+            sm_globalMutex->lock();
+            m_initialized = false;
+            ObserverBase::removeObserver( MessageName::default_instance().GetTypeName() );
+            sm_globalMutex->unlock();
+        }
     }
 
 private:

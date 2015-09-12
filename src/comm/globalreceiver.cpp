@@ -68,6 +68,16 @@ void GlobalReceiver::start()
     m_thread = new std::thread( std::bind( &GlobalReceiver::own_thread, this ) );
 }
 
+void GlobalReceiver::stop()
+{
+    sepia::util::ThreadObject::stop();
+
+    if( sm_messageHandler )
+    {
+        sm_messageHandler->close();
+    }
+}
+
 void GlobalReceiver::initClient( const std::string& a_name )
 {
     sm_isRouter = false;
@@ -102,22 +112,31 @@ void GlobalReceiver::initRouter()
     }
 }
 
-void GlobalReceiver::receiveData( char** a_buffer, size_t& remaining_bytes )
+void GlobalReceiver::receiveData( char** a_buffer, size_t& a_messageSize )
 {
-    remaining_bytes = 0;
+    a_messageSize = 0;
 
-    sm_messageHandler->getMessage( sm_buffer.data(), remaining_bytes );
-    sm_lastBufferSize = remaining_bytes;
-    size_t header_size = *((size_t*) sm_buffer.data());
+    bool got_msg = sm_messageHandler->getMessage( sm_buffer.data(), a_messageSize );
 
-    size_t offset = sizeof( size_t );
+    if( got_msg )
+    {
+        sm_lastBufferSize = a_messageSize;
+        size_t header_size = *((size_t*) sm_buffer.data());
 
-    sm_header.ParseFromArray( sm_buffer.data() + offset, header_size );
+        size_t offset = sizeof( size_t );
 
-    // calculate size of remaining message.
-    remaining_bytes -= ( sizeof( size_t) + header_size );
+        sm_header.ParseFromArray( sm_buffer.data() + offset, header_size );
 
-    *a_buffer = sm_buffer.data() + offset + header_size;
+        // calculate size of remaining message.
+        a_messageSize -= ( sizeof( size_t) + header_size );
+
+        *a_buffer = sm_buffer.data() + offset + header_size;
+    }
+    else
+    {
+        a_messageSize = 0;
+        *a_buffer = NULL;
+    }
 }
 
 const Header* GlobalReceiver::getLastHeader()
@@ -140,10 +159,13 @@ void GlobalReceiver::own_thread()
 {
     while( !m_terminate )
     {
-        size_t remaining_bytes = 0;
+        size_t messageSize = 0;
         char* msg_ptr = NULL;
-        receiveData( &msg_ptr, remaining_bytes );
-        bool handled = ObserverBase::routeMessageToThreads( getLastHeader(), msg_ptr, remaining_bytes );
+        receiveData( &msg_ptr, messageSize );
+        if( msg_ptr )
+        {
+            bool handled = ObserverBase::routeMessageToThreads( getLastHeader(), msg_ptr, messageSize );
+        }
     }
 }
 }

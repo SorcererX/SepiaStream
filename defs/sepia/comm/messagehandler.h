@@ -15,7 +15,8 @@ public:
     ~MessageHandler();
     void create();
     void open();
-    void getMessage( char* a_buffer, size_t& a_receivedBytes );
+    void close();
+    bool getMessage( char* a_buffer, size_t& a_receivedBytes );
     void putMessage( const char* a_buffer, const size_t& a_bytes );
     size_t getMaxSize();
 
