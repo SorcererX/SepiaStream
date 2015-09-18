@@ -63,8 +63,10 @@ ObserverBase::MessageNameMap ObserverBase::sm_messageNameToThread;
 thread_local ObserverBase::ThreadMessageData* ObserverBase::stm_ownData = NULL;
 std::shared_ptr< std::mutex > ObserverBase::sm_globalMutex = std::shared_ptr< std::mutex >( new std::mutex() );
 bool ObserverBase::sm_debugEnabled = false;
+bool ObserverBase::sm_gotIdResponse = false;
 std::unordered_set< std::thread::id > ObserverBase::sm_routerThreads;
 thread_local ObserverBase* ObserverBase::stm_router = NULL;
+std::list< std::string > ObserverBase::sm_subscriptionList;
 
 ObserverBase::ObserverBase()
 {
@@ -130,7 +132,11 @@ void ObserverBase::addObserver( const std::string a_name, ObserverBase* a_Observ
        sm_messageNameToThread[ a_name ] = temp;
        if( !GlobalReceiver::isRouter() )
        {
-            subscribe( a_name );
+           if( sm_gotIdResponse )
+           {
+               subscribe( a_name );
+           }
+            sm_subscriptionList.push_back( a_name );
        }
    }
 }
@@ -169,6 +175,7 @@ void ObserverBase::removeObserver( const std::string a_name )
                 if( !GlobalReceiver::isRouter() )
                 {
                     unsubscribe( a_name );
+                    sm_subscriptionList.remove( a_name );
                 }
             }
         }
@@ -177,6 +184,18 @@ void ObserverBase::removeObserver( const std::string a_name )
             std::cout << "ObserverBase::removeObserver - attempted to remove message not assigned to current thread." << std::endl;
         }
     }
+}
+
+bool ObserverBase::resendAllSubscriptions()
+{
+    sm_gotIdResponse = true;
+
+    sm_globalMutex->lock();
+    for( const std::string msg_name : sm_subscriptionList )
+    {
+        subscribe( msg_name );
+    }
+    sm_globalMutex->unlock();
 }
 
 bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size )

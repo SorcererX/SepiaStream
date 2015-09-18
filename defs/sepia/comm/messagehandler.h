@@ -14,6 +14,7 @@ public:
     MessageHandler( const std::string a_name );
     ~MessageHandler();
     void create();
+    void create_or_open();
     void open();
     void close();
     bool getMessage( char* a_buffer, size_t& a_receivedBytes );

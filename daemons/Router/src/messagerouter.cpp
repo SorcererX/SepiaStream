@@ -91,11 +91,13 @@ void MessageRouter::receive( const sepia::comm::internal::IdNotify* a_message )
     // a_message->pid();
     sepia::comm::internal::IdResponse response;
     response.set_pid( a_message->pid() );
-    addRoute( a_message->pid(), a_message->queue_name() );
+    bool retval = addRoute( a_message->pid(), a_message->queue_name() );
 
-    sepia::comm::MessageSender::selectOutput( m_outputMessageQueues[ a_message->pid() ] );
-
-    sepia::comm::Dispatcher< sepia::comm::internal::IdResponse >::send( &response );
+    if( retval )
+    {
+        sepia::comm::MessageSender::selectOutput( m_outputMessageQueues[ a_message->pid() ] );
+        sepia::comm::Dispatcher< sepia::comm::internal::IdResponse >::send( &response );
+    }
 }
 
 void MessageRouter::receive( const sepia::comm::internal::Subscribe* a_message )
@@ -155,8 +157,14 @@ void MessageRouter::receive( const sepia::comm::internal::ProcessDied* a_message
     removeRoute( a_message->pid() );
 }
 
-void MessageRouter::addRoute( const unsigned int a_identifier, const std::string a_queue )
+bool MessageRouter::addRoute( const unsigned int a_identifier, const std::string a_queue )
 {
+    if( m_outputMessageQueues.find( a_identifier ) != m_outputMessageQueues.end() )
+    {
+        // already added route for this.
+        return false;
+    }
+
     std::cout << "addRoute( " << a_identifier << ", " << a_queue << " ) " << std::endl;
     sepia::comm::MessageHandler* mh = new sepia::comm::MessageHandler( a_queue );
     m_outputMessageQueues[ a_identifier ] = mh;
@@ -165,6 +173,7 @@ void MessageRouter::addRoute( const unsigned int a_identifier, const std::string
     {
         m_processMonitor->add( a_identifier );
     }
+    return true;
 }
 
 void MessageRouter::removeRoute( const unsigned int a_identifier )

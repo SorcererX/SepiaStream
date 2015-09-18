@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using boost::interprocess::message_queue;
 using boost::interprocess::create_only;
 using boost::interprocess::open_only;
+using boost::interprocess::open_or_create;
 
 
 namespace sepia
@@ -71,12 +72,28 @@ void MessageHandler::create()
     }
 }
 
-void MessageHandler::open()
+void MessageHandler::create_or_open()
 {
     if( m_queue == NULL )
     {
+        m_removeQueueOnClose = false;
+        m_queue = new message_queue( open_or_create,
+                                     m_name.c_str(),
+                                     m_maxMessages,
+                                     m_maxMessageSize );
+    }
+}
+
+void MessageHandler::open()
+{
+    while( m_queue == NULL )
+    {
         m_queue = new message_queue( open_only,
                                      m_name.c_str() );
+        if( !m_queue )
+        {
+            usleep( 500000 ); // if queue does not exist, wait 500 ms
+        }
     }
 }
 

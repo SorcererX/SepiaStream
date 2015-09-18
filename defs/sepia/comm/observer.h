@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <iostream>
 #include <thread>
+#include <list>
 
 namespace sepia
 {
@@ -27,10 +28,12 @@ public:
         bool data_ready;
         bool terminateReceiver;
     } ThreadMessageData;
+
     static bool threadReceiver();
     static void stopThreadReceiver( std::thread::id a_threadId );
     static void enableDebug( bool a_enable );
     static bool routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size );
+    static bool resendAllSubscriptions();
     static bool debugEnabled();
 
 protected:
@@ -55,7 +58,9 @@ private:
     static ThreadMap sm_threadData;
     static std::shared_ptr< std::mutex > sm_globalMutex;
     static thread_local ObserverBase* stm_router;
+    static std::list< std::string > sm_subscriptionList;
     static bool sm_debugEnabled;
+    static bool sm_gotIdResponse;
 };
 
 

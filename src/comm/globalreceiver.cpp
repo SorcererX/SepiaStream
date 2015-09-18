@@ -39,7 +39,7 @@ Header GlobalReceiver::sm_header;
 std::vector< char > GlobalReceiver::sm_buffer;
 bool GlobalReceiver::sm_isRouter = false;
 size_t GlobalReceiver::sm_lastBufferSize = 0;
-
+std::string GlobalReceiver::sm_name = "default";
 
 namespace
 {
@@ -51,10 +51,9 @@ namespace
         msg.set_node_name( a_name );
         Dispatcher< sepia::comm::internal::IdNotify >::send( &msg );
     }
-
 }
 
-GlobalReceiver::GlobalReceiver()
+GlobalReceiver::GlobalReceiver() : m_heartBeatThread( NULL )
 {
 }
 
@@ -66,6 +65,11 @@ bool GlobalReceiver::isRouter()
 void GlobalReceiver::start()
 {
     m_thread = new std::thread( std::bind( &GlobalReceiver::own_thread, this ) );
+
+    if( !sm_isRouter )
+    {
+        m_heartBeatThread = new std::thread( std::bind( &GlobalReceiver::heartbeat_thread, this ) );
+    }
 }
 
 void GlobalReceiver::stop()
@@ -80,6 +84,7 @@ void GlobalReceiver::stop()
 
 void GlobalReceiver::initClient( const std::string& a_name )
 {
+    sm_name = a_name;
     sm_isRouter = false;
    if( !sm_messageHandler )
    {
@@ -91,7 +96,7 @@ void GlobalReceiver::initClient( const std::string& a_name )
    {
        sm_buffer.reserve( sm_messageHandler->getMaxSize() );
        sm_buffer.resize( sm_messageHandler->getMaxSize() );
-       id_notify( a_name );
+       id_notify( sm_name );
    }
 
 }
@@ -102,7 +107,7 @@ void GlobalReceiver::initRouter()
     if( !sm_messageHandler )
     {
         sm_messageHandler = new MessageHandler( "cuttlefish_outgoing" );
-        sm_messageHandler->create();
+        sm_messageHandler->create_or_open();
     }
 
     if( sm_buffer.size() == 0 )
@@ -164,9 +169,28 @@ void GlobalReceiver::own_thread()
         receiveData( &msg_ptr, messageSize );
         if( msg_ptr )
         {
-            bool handled = ObserverBase::routeMessageToThreads( getLastHeader(), msg_ptr, messageSize );
+            if( getLastHeader()->message_name() == "sepia.comm.internal.IdResponse" )
+            {
+                std::cout << "got IdResponse!" << std::endl;
+                ObserverBase::resendAllSubscriptions();
+                std::cout << "resent all subscriptions." << std::endl;
+            }
+            else
+            {
+                bool handled = ObserverBase::routeMessageToThreads( getLastHeader(), msg_ptr, messageSize );
+            }
         }
     }
 }
+
+void GlobalReceiver::heartbeat_thread()
+{
+    while( !m_terminate )
+    {
+        id_notify( sm_name );
+        usleep( 1000000 ); // wait 1 second.
+    }
+}
+
 }
 }

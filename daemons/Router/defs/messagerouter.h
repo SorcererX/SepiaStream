@@ -36,7 +36,7 @@ protected:
     void receive( const sepia::comm::internal::Subscribe*   a_message );
     void receive( const sepia::comm::internal::UnSubscribe* a_message );
     void receive( const sepia::comm::internal::ProcessDied* a_message );
-    void addRoute( const unsigned int a_id, const std::string a_queue );
+    bool addRoute( const unsigned int a_id, const std::string a_queue );
     void removeRoute( const unsigned int a_id );
 
 private:

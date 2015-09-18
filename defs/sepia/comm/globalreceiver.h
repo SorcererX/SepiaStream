@@ -28,6 +28,7 @@ public:
 
 protected:
     void own_thread();
+    void heartbeat_thread();
     static void receiveData( char** a_buffer, size_t& remaining_bytes );
     static const Header* getLastHeader();
 
@@ -36,9 +37,11 @@ private:
     static MessageHandler* sm_messageHandler;
     static Header sm_header;
     static std::vector< char > sm_buffer;
+    std::thread* m_heartBeatThread;
     static bool sm_isRouter;
     static size_t sm_lastBufferSize;
     static ObserverBase* sm_router;
+    static std::string sm_name;
 };
 }
 }
