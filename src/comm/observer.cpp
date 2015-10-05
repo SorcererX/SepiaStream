@@ -23,7 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <sepia/comm/observer.h>
+#include <sepia/comm/observerbase.h>
 #include <sepia/comm/dispatcher.h>
 #include <unistd.h>
 #include <sepia/comm/globalreceiver.h>
@@ -64,7 +64,6 @@ thread_local ObserverBase::ThreadMessageData* ObserverBase::stm_ownData = NULL;
 std::shared_ptr< std::mutex > ObserverBase::sm_globalMutex = std::shared_ptr< std::mutex >( new std::mutex() );
 bool ObserverBase::sm_debugEnabled = false;
 bool ObserverBase::sm_gotIdResponse = false;
-std::unordered_set< std::thread::id > ObserverBase::sm_routerThreads;
 thread_local ObserverBase* ObserverBase::stm_router = NULL;
 std::list< std::string > ObserverBase::sm_subscriptionList;
 
@@ -141,15 +140,6 @@ void ObserverBase::addObserver( const std::string a_name, ObserverBase* a_Observ
    }
 }
 
-void ObserverBase::addRouter( ObserverBase* a_Observer )
-{
-    sm_routerThreads.insert( std::this_thread::get_id() );
-    if( !stm_router )
-    {
-        stm_router = a_Observer;
-    }
-}
-
 void ObserverBase::removeObserver( const std::string a_name )
 {
     MessageNameMap::iterator message_it = sm_messageNameToThread.find( a_name );
@@ -208,15 +198,9 @@ bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer
         {
             routeToNode( node, a_header, a_buffer, a_size );
         }
+        return true;
     }
-    else
-    {
-        for( std::thread::id node : sm_routerThreads )
-        {
-            routeToNode( node, a_header, a_buffer, a_size );
-        }
-    }
-    return true;
+    return false;
 }
 
 bool ObserverBase::routeToNode( std::thread::id a_node, const Header* a_header, char* a_buffer, const size_t a_size )
@@ -258,15 +242,7 @@ bool ObserverBase::handleReceive( const Header* a_header, const char* a_buffer, 
         it->second->process( NULL, a_buffer, a_size );
         return true;
     }
-    else
-    {
-        if( stm_router )
-        {
-            stm_router->process( a_header, a_buffer, a_size );
-            return true;
-        }
-        return false;
-    }
+    return false;
 }
 
 

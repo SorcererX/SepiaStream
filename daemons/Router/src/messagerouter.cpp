@@ -51,7 +51,7 @@ void MessageRouter::setProcessMonitor( ProcessMonitor* a_processMonitor )
     m_processMonitor = a_processMonitor;
 }
 
-void MessageRouter::route( const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size )
+void MessageRouter::receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size )
 {
     std::cout << "source: " << a_header->source_node() << " message: " << a_header->message_name() << " ";
     std::cout << "-> ";
@@ -111,9 +111,11 @@ void MessageRouter::receive( const sepia::comm::internal::Subscribe* a_message )
         }
         else
         {
+            ObserverRaw::initRawReceiver( a_message->message_name(i) );
             std::unordered_set< unsigned int > temp;
             temp.insert( a_message->source_node() );
             m_messageNameToSubscribers[ a_message->message_name(i) ] = temp;
+            // Forward subscription
         }
     }
 }
@@ -130,7 +132,8 @@ void MessageRouter::receive( const sepia::comm::internal::UnSubscribe* a_message
 
             if( it->second.size() == 0 )
             {
-               m_messageNameToSubscribers.erase( it );
+                ObserverRaw::destroyRawReceiver( it->first );
+                m_messageNameToSubscribers.erase( it );
             }
         }
         else

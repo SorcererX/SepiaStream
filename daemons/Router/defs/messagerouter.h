@@ -6,6 +6,7 @@
 #include "internal.pb.h"
 #include "header.pb.h"
 #include <sepia/comm/observer.h>
+#include <sepia/comm/observerraw.h>
 
 
 class ProcessMonitor;
@@ -18,7 +19,7 @@ namespace comm
 }
 }
 
-class MessageRouter : public sepia::comm::ObserverRouter,
+class MessageRouter : public sepia::comm::ObserverRaw,
                       public sepia::comm::Observer< sepia::comm::internal::IdNotify >,
                       public sepia::comm::Observer< sepia::comm::internal::Subscribe >,
                       public sepia::comm::Observer< sepia::comm::internal::UnSubscribe >,
@@ -31,11 +32,12 @@ public:
 
 protected:
     void own_thread();
-    void route(   const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size );
     void receive( const sepia::comm::internal::IdNotify*    a_message );
     void receive( const sepia::comm::internal::Subscribe*   a_message );
     void receive( const sepia::comm::internal::UnSubscribe* a_message );
     void receive( const sepia::comm::internal::ProcessDied* a_message );
+
+    void receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size );
     bool addRoute( const unsigned int a_id, const std::string a_queue );
     void removeRoute( const unsigned int a_id );
 

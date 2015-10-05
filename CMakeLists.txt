@@ -20,6 +20,8 @@ if(BUILD_COMM)
         ${CMAKE_SOURCE_DIR}/defs/sepia/comm/messagehandler.h
         ${CMAKE_SOURCE_DIR}/defs/sepia/comm/messagesender.h
         ${CMAKE_SOURCE_DIR}/defs/sepia/comm/observer.h
+        ${CMAKE_SOURCE_DIR}/defs/sepia/comm/observerbase.h
+        ${CMAKE_SOURCE_DIR}/defs/sepia/comm/observerraw.h
         ${CMAKE_SOURCE_DIR}/defs/sepia/comm/scom.h )
     aux_source_directory(src/comm SRC_LIST)
     include_directories(defs/sepia/comm)
