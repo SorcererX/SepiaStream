@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "header.pb.h"
 #include "internal.pb.h"
 #include <sepia/comm/messagehandler.h>
+#include <google/protobuf/message_lite.h>
 
 namespace sepia
 {
@@ -77,5 +78,30 @@ void MessageSender::selectOutput( MessageHandler* a_handler )
         sm_header->set_source_router( 0 );
     }
 }
+
+void MessageSender::rawSend( char* a_header, size_t a_headerSize, char* a_msg, size_t a_msgSize )
+{
+    char* offset = sm_buffer.data();
+    memcpy( offset, reinterpret_cast< char* >( &a_headerSize ), sizeof( size_t ) );
+    offset += sizeof( size_t );
+    memcpy( offset, a_msg, a_msgSize );
+    offset += a_msgSize;
+    sm_messageHandler->putMessage( sm_buffer.data(), offset - sm_buffer.data() );
+}
+
+void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, const google::protobuf::MessageLite* a_msg )
+{
+    size_t size = static_cast< size_t >( a_header->ByteSize() );
+    char* offset = sm_buffer.data();
+    memcpy( offset, reinterpret_cast< char* >( &size ), sizeof( size_t ) );
+    offset += sizeof( size_t );
+    a_header->SerializeToArray( offset, size );
+    offset += size;
+    size = a_msg->ByteSize();
+    a_msg->SerializeToArray( offset, size );
+    offset += size;
+    sm_messageHandler->putMessage( sm_buffer.data(), offset - sm_buffer.data() );
+}
+
 }
 }

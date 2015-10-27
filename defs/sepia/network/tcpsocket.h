@@ -12,7 +12,9 @@ class TcpSocket
 {
 public:
     TcpSocket();
+    TcpSocket( int a_socket );
     ~TcpSocket();
+    void fromRawSocket( int a_socket );
     std::string accept( int a_socket );
     void bind( int a_port );
     void listen( int a_maxVal );
@@ -21,7 +23,7 @@ public:
     template< class T > void receive( T& a_data );
     template< class T > void send( T& a_data );
     void receive( char* a_data, size_t a_size );
-    void send( char* a_data, size_t a_size );
+    void send( const char* a_data, size_t a_size );
     void throwError( int a_error );
     void close();
 

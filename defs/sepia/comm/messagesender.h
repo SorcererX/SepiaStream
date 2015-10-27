@@ -3,6 +3,14 @@
 #include <vector>
 #include <string>
 
+namespace google
+{
+    namespace protobuf
+    {
+        class MessageLite;
+    }
+}
+
 namespace sepia
 {
 namespace comm
@@ -16,6 +24,8 @@ class MessageSender
 public:
     static void initClient();
     static void selectOutput( MessageHandler* a_handler );
+    static void rawSend( char* a_header, size_t a_headerSize, char* a_msg, size_t a_msgSize );
+    static void rawSend( const google::protobuf::MessageLite* a_header, const google::protobuf::MessageLite* a_msg );
 
 private:
     MessageSender() = delete;

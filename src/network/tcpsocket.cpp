@@ -41,13 +41,18 @@ namespace sepia
 namespace network
 {
 
-TcpSocket::TcpSocket()
+TcpSocket::TcpSocket( int a_socket ) : m_sock( a_socket )
+{
+
+}
+
+TcpSocket::TcpSocket() : m_sock( 0 )
 {
 }
 
 TcpSocket::~TcpSocket()
 {
-    ::close( m_sock );
+    close();
 }
 
 void TcpSocket::init()
@@ -84,6 +89,19 @@ void TcpSocket::init()
         std::cerr << "Error setting SO_SNDBUF: " << strerror( errno ) << std::endl;
     }
 
+}
+
+void TcpSocket::fromRawSocket( int a_socket )
+{
+    if( !m_sock )
+    {
+        m_sock = a_socket;
+    }
+    else
+    {
+        close();
+        m_sock = a_socket;
+    }
 }
 
 void TcpSocket::connect( const std::string& a_host, int a_port )
@@ -186,7 +204,7 @@ int TcpSocket::getFD() const
     return m_sock;
 }
 
-void TcpSocket::send( char* a_data, size_t a_size )
+void TcpSocket::send( const char* a_data, size_t a_size )
 {
     if( rawSend( a_data, a_size ) < 0 )
     {
@@ -232,7 +250,10 @@ void TcpSocket::throwError( int a_error )
 
 void TcpSocket::close()
 {
-    ::close( m_sock );
+    if( m_sock )
+    {
+        ::close( m_sock );
+    }
 }
 
 }

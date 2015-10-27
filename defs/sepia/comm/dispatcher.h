@@ -20,21 +20,7 @@ namespace comm
             {
                 std::cout << "Dispatching: " << a_message->GetTypeName() << " " << a_message->ShortDebugString() << std::endl;
             }
-            // reserve space for size of header.
-            size_t send_bytes = sm_header->ByteSize();
-            size_t accum_bytes = sizeof( size_t );
-
-            // write header size to start of buffer.
-            memcpy( sm_buffer.data(), &send_bytes, sizeof( size_t ) );
-
-            sm_header->SerializeToArray( sm_buffer.data() + accum_bytes, sm_header->ByteSize() );
-            accum_bytes += send_bytes;
-
-            send_bytes = a_message->ByteSize();
-
-            a_message->SerializeToArray( sm_buffer.data() + accum_bytes, send_bytes );
-            accum_bytes += send_bytes;
-            sm_messageHandler->putMessage( sm_buffer.data(), accum_bytes );
+            rawSend( sm_header, a_message );
          }
 
          static void localSend( const MessageName* a_message )
