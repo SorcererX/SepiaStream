@@ -6,12 +6,24 @@ const size_t BUFFER_SIZE = 16384; // 16 KiB
 
 MsgSocket::MsgSocket( int a_socket )
 {
+    init();
+    m_socket = new sepia::network::TcpSocket( a_socket );
+}
+
+MsgSocket::MsgSocket( sepia::network::TcpSocket* a_socket )
+{
+    init();
+    m_socket = a_socket;
+}
+
+
+void MsgSocket::init()
+{
     m_sendBuffer.reserve( BUFFER_SIZE );
     m_sendBuffer.resize(  BUFFER_SIZE );
 
     m_receiveBuffer.reserve( BUFFER_SIZE );
     m_receiveBuffer.resize(  BUFFER_SIZE );
-    m_socket = new sepia::network::TcpSocket( a_socket );
 }
 
 MsgSocket::~MsgSocket()

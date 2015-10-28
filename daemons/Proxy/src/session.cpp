@@ -10,6 +10,11 @@ Session::Session( int a_socket )
     m_socket = new MsgSocket( a_socket );
 }
 
+Session::Session( sepia::network::TcpSocket* a_socket )
+{
+    m_socket = new MsgSocket( a_socket );
+}
+
 Session::~Session()
 {
     //m_socket->close();

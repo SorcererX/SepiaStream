@@ -31,12 +31,16 @@ void ProxyServer::own_thread()
 {
     m_socket->listen( 5 );
 
+    sepia::network::TcpSocket* socket;
+
     while( !m_terminate )
     {
         std::cout << "waiting.." << std::endl;
-        int sock;
-        m_socket->accept( sock );
-        Session* connection = new Session( sock );
+        sepia::network::TcpSocket* socket = new sepia::network::TcpSocket();
+        socket->accept( m_socket->getFD() );
+
+        Session* connection = new Session( socket );
+
         m_sessions.push_back( connection );
         connection->start();
     }

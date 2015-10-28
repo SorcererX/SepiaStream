@@ -9,6 +9,14 @@
 
 class MsgSocket;
 
+namespace sepia
+{
+    namespace network
+    {
+        class TcpSocket;
+    }
+}
+
 class Session : public sepia::comm::ObserverRaw
               , public sepia::comm::Observer< sepia::comm::internal::ForwardSubscribe >
               , public sepia::comm::Observer< sepia::comm::internal::ForwardUnsubscribe >
@@ -18,6 +26,7 @@ class Session : public sepia::comm::ObserverRaw
 {
 public:
     Session( int a_socket );
+    Session( sepia::network::TcpSocket* a_socket );
     ~Session();
     void start();
 

@@ -27,12 +27,15 @@ class MsgSocket
 {
 public:
     MsgSocket( int a_socket );
+    MsgSocket( sepia::network::TcpSocket* a_socket );
     ~MsgSocket();
     void sendMsg( const google::protobuf::MessageLite* a_msg );
     void sendMsg( const char* a_buffer, size_t a_size );
     void recvMsg( char* a_buffer, size_t& a_size );
     void recvMsg( google::protobuf::MessageLite* a_msg );
 
+protected:
+    void init();
 private:
     sepia::network::TcpSocket* m_socket;
     std::vector< char > m_sendBuffer;
