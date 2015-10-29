@@ -128,7 +128,11 @@ void MessageRouter::receive( const sepia::comm::internal::UnSubscribe* a_message
         if( it != m_messageNameToSubscribers.end() )
         {
             std::unordered_set< unsigned int >::iterator list_it = it->second.find( a_message->source_node() );
-            it->second.erase( list_it );
+
+            if( list_it != it->second.end() )
+            {
+                it->second.erase( list_it );
+            }
 
             if( it->second.size() == 0 )
             {
@@ -150,7 +154,11 @@ void MessageRouter::receive( const sepia::comm::internal::ProcessDied* a_message
     for( it = m_messageNameToSubscribers.begin(); it != m_messageNameToSubscribers.end(); ++it )
     {
         std::unordered_set< unsigned int >::iterator list_it = it->second.find( a_message->pid() );
-        it->second.erase( list_it );
+
+        if( list_it != it->second.end() )
+        {
+            it->second.erase( list_it );
+        }
 
         if( it->second.size() == 0 )
         {
