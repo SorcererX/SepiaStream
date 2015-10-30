@@ -40,6 +40,7 @@ protected:
     void receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size );
     bool addRoute( const unsigned int a_id, const std::string a_queue );
     void removeRoute( const unsigned int a_id );
+    template< class MessageName > void routeMessage( MessageName* msg );
 
 private:
     std::string m_incomingQueueName;

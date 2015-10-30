@@ -36,6 +36,7 @@ void Session::receive( const sepia::comm::internal::ForwardSubscribe* a_message 
 
     m_header->set_message_name( msg.GetTypeName() );
 
+    std::cout << msg.GetTypeName() << " send: " << msg.DebugString() << std::endl;
     m_socket->sendMsg( m_header );
     m_socket->sendMsg( a_message );
 }
@@ -52,6 +53,7 @@ void Session::receive(const sepia::comm::internal::ForwardUnsubscribe* a_message
 
     m_header->set_message_name( msg.GetTypeName() );
 
+    std::cout << msg.GetTypeName() << " send: " << msg.DebugString() << std::endl;
     m_socket->sendMsg( m_header );
     m_socket->sendMsg( &msg );
 }
@@ -69,6 +71,7 @@ void Session::receive( const sepia::comm::internal::RemoteUnsubscription* a_mess
 
 void Session::receiveRaw( const sepia::comm::Header* a_header, const char* a_buffer, size_t a_size )
 {
+    std::cout << a_header->message_name() << " RawSend: <NOT DECODED>" << std::endl;
     m_socket->sendMsg( a_header );
     m_socket->sendMsg( a_buffer, a_size );
 }
