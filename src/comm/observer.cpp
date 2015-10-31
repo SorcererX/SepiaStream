@@ -66,6 +66,7 @@ bool ObserverBase::sm_debugEnabled = false;
 bool ObserverBase::sm_gotIdResponse = false;
 thread_local ObserverBase* ObserverBase::stm_router = NULL;
 std::list< std::string > ObserverBase::sm_subscriptionList;
+std::string ObserverBase::sm_commName;
 
 ObserverBase::ObserverBase()
 {
@@ -79,6 +80,23 @@ void ObserverBase::enableDebug( bool a_enable )
 bool ObserverBase::debugEnabled()
 {
     return sm_debugEnabled;
+}
+
+std::string ObserverBase::commName()
+{
+    if( sm_commName.size() == 0 )
+    {
+        char* name = getenv( "SEPIACOMM" );
+        if( name )
+        {
+            sm_commName = name;
+        }
+        else
+        {
+            sm_commName = "cuttlefish";
+        }
+    }
+    return sm_commName;
 }
 
 void ObserverBase::stopThreadReceiver( std::thread::id a_threadId )

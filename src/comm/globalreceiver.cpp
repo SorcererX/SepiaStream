@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sepia/comm/globalreceiver.h>
 #include <sepia/comm/messagehandler.h>
 #include <sepia/comm/dispatcher.h>
+#include <sepia/comm/observerbase.h>
 #include "internal.pb.h"
 #include "header.pb.h"
 #include <sepia/comm/observer.h>
@@ -47,7 +48,7 @@ namespace
     {
         sepia::comm::internal::IdNotify msg;
         msg.set_pid( getpid() );
-        msg.set_queue_name( std::string( "cuttlefish_incoming_" ) + std::to_string( getpid() ) );
+        msg.set_queue_name( sepia::comm::ObserverBase::commName() + std::string( "_incoming_" ) + std::to_string( getpid() ) );
         msg.set_node_name( a_name );
         Dispatcher< sepia::comm::internal::IdNotify >::send( &msg );
     }
@@ -88,7 +89,9 @@ void GlobalReceiver::initClient( const std::string& a_name )
     sm_isRouter = false;
    if( !sm_messageHandler )
    {
-      sm_messageHandler = new MessageHandler( std::string( "cuttlefish_incoming_" ) + std::to_string( getpid() ) );
+      sm_messageHandler = new MessageHandler( sepia::comm::ObserverBase::commName()
+                                            + std::string( "_incoming_" )
+                                            + std::to_string( getpid() ) );
       sm_messageHandler->create();
    }
 
@@ -106,7 +109,7 @@ void GlobalReceiver::initRouter()
     sm_isRouter = true;
     if( !sm_messageHandler )
     {
-        sm_messageHandler = new MessageHandler( "cuttlefish_outgoing" );
+        sm_messageHandler = new MessageHandler( sepia::comm::ObserverBase::commName() + std::string( "_outgoing" ) );
         sm_messageHandler->create_or_open();
     }
 

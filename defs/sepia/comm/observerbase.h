@@ -38,6 +38,7 @@ public:
     static bool routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size );
     static bool resendAllSubscriptions();
     static bool debugEnabled();
+    static std::string commName();
 
 protected:
     void initReceiver();
@@ -62,6 +63,7 @@ private:
     static std::list< std::string > sm_subscriptionList;
     static bool sm_debugEnabled;
     static bool sm_gotIdResponse;
+    static std::string sm_commName;
 };
 }
 }

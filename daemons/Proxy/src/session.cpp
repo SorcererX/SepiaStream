@@ -45,7 +45,7 @@ void Session::receive( const sepia::comm::internal::ForwardSubscribe* a_message 
 
     m_header->set_message_name( msg.GetTypeName() );
 
-    std::cout << msg.GetTypeName() << " send: " << msg.DebugString() << std::endl;
+    std::cout << msg.GetTypeName() << " send: " << msg.ShortDebugString() << std::endl;
     m_socket->sendMsg( m_header );
     m_socket->sendMsg( a_message );
 }
@@ -62,7 +62,7 @@ void Session::receive(const sepia::comm::internal::ForwardUnsubscribe* a_message
 
     m_header->set_message_name( msg.GetTypeName() );
 
-    std::cout << msg.GetTypeName() << " send: " << msg.DebugString() << std::endl;
+    std::cout << msg.GetTypeName() << " send: " << msg.ShortDebugString() << std::endl;
     m_socket->sendMsg( m_header );
     m_socket->sendMsg( &msg );
 }

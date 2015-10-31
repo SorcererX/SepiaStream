@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internal.pb.h"
 #include <sepia/comm/messagehandler.h>
 #include <google/protobuf/message_lite.h>
+#include <sepia/comm/observerbase.h>
 
 namespace sepia
 {
@@ -43,7 +44,7 @@ void MessageSender::initClient()
 {
     if( !sm_messageHandler )
     {
-        sm_messageHandler = new MessageHandler( "cuttlefish_outgoing" );
+        sm_messageHandler = new MessageHandler( sepia::comm::ObserverBase::commName() + std::string( "_outgoing" ) );
         sm_messageHandler->open();
     }
 
