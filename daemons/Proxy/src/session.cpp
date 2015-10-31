@@ -8,11 +8,20 @@ using sepia::network::TcpSocket;
 Session::Session( int a_socket )
 {
     m_socket = new MsgSocket( a_socket );
+    init();
 }
 
 Session::Session( sepia::network::TcpSocket* a_socket )
 {
     m_socket = new MsgSocket( a_socket );
+    init();
+}
+
+void Session::init()
+{
+    m_header = new sepia::comm::Header();
+    m_header->set_source_node( getpid() );
+    m_header->set_source_router( 0 );
 }
 
 Session::~Session()
