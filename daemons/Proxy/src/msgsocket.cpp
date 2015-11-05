@@ -40,8 +40,10 @@ void MsgSocket::sendMsg( const google::protobuf::MessageLite* a_msg )
 
 void MsgSocket::sendMsg( const char* a_buffer, size_t a_size )
 {
+    std::cout << "MsgSocket::sendMsg() - " << a_size << std::flush;
     m_socket->send( a_size );
     m_socket->send( a_buffer, a_size );
+    std::cout << " -- COMPLETE" << std::endl;
 }
 
 void MsgSocket::recvMsg( google::protobuf::MessageLite* a_msg )
@@ -53,7 +55,10 @@ void MsgSocket::recvMsg( google::protobuf::MessageLite* a_msg )
 
 void MsgSocket::recvMsg( char* a_buffer, size_t& a_size )
 {
+    std::cout << "MsgSocket::recvMsg() - get size: " << std::flush;
     m_socket->receive( a_size );
+    std::cout << a_size << std::flush;
     m_socket->receive( a_buffer, a_size );
+    std::cout << " -- COMPLETE" << std::endl;
 }
 

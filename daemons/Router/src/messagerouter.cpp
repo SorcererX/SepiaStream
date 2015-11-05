@@ -29,6 +29,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sepia/comm/dispatcher.h>
 #include "processmonitor.h"
 
+namespace
+{
+    bool forwardMessageIfNoMatch( std::string a_messageName )
+    {
+        if( ( a_messageName == "sepia.comm.internal.ForwardSubscribe" )
+         || ( a_messageName == "sepia.comm.internal.ForwardUnsubscribe" )
+         || ( a_messageName == "sepia.comm.internal.RemoteSubscription" )
+         || ( a_messageName == "sepia.comm.internal.RemoteUnsubscription" ) )
+        {
+            return false;
+        }
+        return true;
+    }
+}
+
 MessageRouter::MessageRouter( const std::string a_incomingQueueName )
     : m_incomingQueueName( a_incomingQueueName ),
       m_processMonitor( NULL ),
@@ -116,9 +131,12 @@ void MessageRouter::receive( const sepia::comm::internal::Subscribe* a_message )
             temp.insert( a_message->source_node() );
             m_messageNameToSubscribers[ a_message->message_name(i) ] = temp;
             // Forward subscription
-            sepia::comm::internal::ForwardSubscribe fwd_msg;
-            fwd_msg.set_message_name( a_message->message_name(i) );
-            routeMessage( &fwd_msg );
+            if( forwardMessageIfNoMatch( a_message->message_name(i) ) )
+            {
+                sepia::comm::internal::ForwardSubscribe fwd_msg;
+                fwd_msg.set_message_name( a_message->message_name(i) );
+                routeMessage( &fwd_msg );
+            }
         }
     }
 }
@@ -143,9 +161,12 @@ void MessageRouter::receive( const sepia::comm::internal::UnSubscribe* a_message
                 m_messageNameToSubscribers.erase( it );
 
                 // Forward unsubscription
-                sepia::comm::internal::ForwardUnsubscribe fwd_msg;
-                fwd_msg.set_message_name( a_message->message_name(i) );
-                routeMessage( &fwd_msg );
+                if( forwardMessageIfNoMatch( a_message->message_name(i) ) )
+                {
+                    sepia::comm::internal::ForwardUnsubscribe fwd_msg;
+                    fwd_msg.set_message_name( a_message->message_name(i) );
+                    routeMessage( &fwd_msg );
+                }
             }
         }
         else

@@ -19,6 +19,9 @@ Session::Session( sepia::network::TcpSocket* a_socket )
 
 void Session::init()
 {
+    m_recvBuffer.reserve( 1024 );
+    m_recvBuffer.resize( 1024 );
+    m_tcpReceiverThread = NULL;
     m_header = new sepia::comm::Header();
     m_header->set_source_node( getpid() );
     m_header->set_source_router( 0 );
@@ -33,6 +36,7 @@ Session::~Session()
 void Session::start()
 {
     m_thread = new std::thread( std::bind( &Session::own_thread, this ) );
+    m_tcpReceiverThread = new std::thread( std::bind( &Session::tcpreceiver_thread, this ) );
 }
 
 void Session::receive( const sepia::comm::internal::ForwardSubscribe* a_message )
@@ -45,7 +49,7 @@ void Session::receive( const sepia::comm::internal::ForwardSubscribe* a_message 
 
     m_header->set_message_name( msg.GetTypeName() );
 
-    std::cout << msg.GetTypeName() << " send: " << msg.ShortDebugString() << std::endl;
+    std::cout << msg.GetTypeName() << " TCPsend: " << msg.ShortDebugString() << std::endl;
     m_socket->sendMsg( m_header );
     m_socket->sendMsg( a_message );
 }
@@ -62,7 +66,7 @@ void Session::receive(const sepia::comm::internal::ForwardUnsubscribe* a_message
 
     m_header->set_message_name( msg.GetTypeName() );
 
-    std::cout << msg.GetTypeName() << " send: " << msg.ShortDebugString() << std::endl;
+    std::cout << msg.GetTypeName() << " TCPsend: " << msg.ShortDebugString() << std::endl;
     m_socket->sendMsg( m_header );
     m_socket->sendMsg( &msg );
 }
@@ -100,4 +104,16 @@ void Session::own_thread()
     sepia::comm::Observer< sepia::comm::internal::ForwardUnsubscribe >::destroyReceiver();
     sepia::comm::Observer< sepia::comm::internal::RemoteSubscription >::destroyReceiver();
     sepia::comm::Observer< sepia::comm::internal::RemoteUnsubscription >::destroyReceiver();
+}
+
+void Session::tcpreceiver_thread()
+{
+    while( !m_terminate )
+    {
+        size_t header_size = 0;
+        m_socket->recvMsg( m_recvBuffer.data(), header_size );
+        size_t msg_size = 0;
+        m_socket->recvMsg( m_recvBuffer.data() + header_size , msg_size );
+        sepia::comm::MessageSender::rawSend( m_recvBuffer.data(), header_size, m_recvBuffer.data() + header_size, msg_size );
+    }
 }
