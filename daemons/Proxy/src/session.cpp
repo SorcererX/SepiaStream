@@ -2,6 +2,7 @@
 #include "msgsocket.h"
 #include <sepia/comm/dispatcher.h>
 #include <sepia/comm/observer.h>
+#include <sepia/comm/header.pb.h>
 
 using sepia::network::TcpSocket;
 
@@ -108,12 +109,28 @@ void Session::own_thread()
 
 void Session::tcpreceiver_thread()
 {
+    sepia::comm::Header header;
     while( !m_terminate )
     {
         size_t header_size = 0;
         m_socket->recvMsg( m_recvBuffer.data(), header_size );
+        header.ParseFromArray( m_recvBuffer.data(), header_size );
+
         size_t msg_size = 0;
         m_socket->recvMsg( m_recvBuffer.data() + header_size , msg_size );
-        sepia::comm::MessageSender::rawSend( m_recvBuffer.data(), header_size, m_recvBuffer.data() + header_size, msg_size );
+
+        if( ( header.message_name() == "sepia.comm.internal.RemoteSubscription" )
+         || ( header.message_name() == "sepia.comm.internal.RemoteUnsubscription" ) )
+        {
+            std::cout << "Got: " << header.message_name() << " routing local.." << std::endl;
+            ObserverBase::routeMessageToThreads( &header, m_recvBuffer.data() + header_size, msg_size );
+            std::cout << "Routing complete." << std::endl;
+        }
+        else
+        {
+            std::cout << "Got: " << header.message_name() << "rawSending" << std::endl;
+            sepia::comm::MessageSender::rawSend( m_recvBuffer.data(), header_size, m_recvBuffer.data() + header_size, msg_size );
+            std::cout << "Rawsend complete." << std::endl;
+        }
     }
 }

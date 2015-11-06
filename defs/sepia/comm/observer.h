@@ -29,15 +29,12 @@ protected:
     }
     void process( const Header* a_header, const char* a_buffer, size_t a_size )
     {
-        if( !a_header )
+        m_message.ParseFromArray( a_buffer, a_size );
+        if( ObserverBase::debugEnabled() && m_message.GetTypeName() != "sepia.comm.internal.IdNotify" )
         {
-            m_message.ParseFromArray( a_buffer, a_size );
-            if( ObserverBase::debugEnabled() )
-            {
-                std::cout << "Observer: " << m_message.GetTypeName() << " " << m_message.ShortDebugString() << std::endl;
-            }
-            receive( &m_message );
+            std::cout << "Observer: " << m_message.GetTypeName() << " " << m_message.ShortDebugString() << std::endl;
         }
+        receive( &m_message );
     }
     virtual void receive( const MessageName* msg ) = 0;
     void initReceiver()

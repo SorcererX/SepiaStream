@@ -257,7 +257,7 @@ bool ObserverBase::handleReceive( const Header* a_header, const char* a_buffer, 
     ObserverMap::iterator it = stm_observers.find( a_header->message_name() );
     if( it != stm_observers.end() )
     {
-        it->second->process( NULL, a_buffer, a_size );
+        it->second->process( a_header, a_buffer, a_size );
         return true;
     }
     return false;
