@@ -54,7 +54,6 @@ private:
 
     ProcessMonitor* m_processMonitor;
 
-    char* m_buffer;
     unsigned int m_currentNodeId;
     unsigned int m_routerId;
 };

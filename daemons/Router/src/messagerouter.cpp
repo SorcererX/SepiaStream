@@ -81,8 +81,8 @@ void MessageRouter::receiveRaw( const sepia::comm::Header *a_header, const char 
             std::cout << std::to_string( node );
             if( mh_it != m_outputMessageQueues.end() )
             {
-                mh_it->second->putMessage( a_buffer,
-                                           a_size );
+                sepia::comm::MessageSender::selectOutput( mh_it->second );
+                sepia::comm::MessageSender::rawSend( a_header, a_buffer, a_size );
             }
             else
             {
