@@ -70,7 +70,8 @@ bool SharedMemory::init( std::string& name, size_t bytes, int* fd )
 
 bool SharedMemory::open( std::string& name, int* fd )
 {
-    *fd = shm_open( name.c_str(), O_RDONLY, 0777 );
+    //*fd = shm_open( name.c_str(), O_RDONLY, 0777 );
+    *fd = shm_open( name.c_str(), O_RDWR, 0777 );
     if( *fd >= 0 )
     {
         return true;
