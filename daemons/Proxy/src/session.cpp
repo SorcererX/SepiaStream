@@ -128,8 +128,9 @@ void Session::tcpreceiver_thread()
         }
         else
         {
+            header.set_source_node( getpid() );
             std::cout << "Got: " << header.message_name() << "rawSending" << std::endl;
-            sepia::comm::MessageSender::rawSend( m_recvBuffer.data(), header_size, m_recvBuffer.data() + header_size, msg_size );
+            sepia::comm::MessageSender::rawSend( &header, m_recvBuffer.data() + header_size, msg_size );
             std::cout << "Rawsend complete." << std::endl;
         }
     }

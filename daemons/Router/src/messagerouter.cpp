@@ -79,7 +79,12 @@ void MessageRouter::receiveRaw( const sepia::comm::Header *a_header, const char 
         {
             MessageHandlerList::iterator mh_it = m_outputMessageQueues.find( node );
             std::cout << std::to_string( node );
-            if( mh_it != m_outputMessageQueues.end() )
+
+            if( node == a_header->source_node() )
+            {
+                std::cout << "{SOURCE_IGNORED}";
+            }
+            else if( mh_it != m_outputMessageQueues.end() )
             {
                 sepia::comm::MessageSender::selectOutput( mh_it->second );
                 sepia::comm::MessageSender::rawSend( a_header, a_buffer, a_size );
