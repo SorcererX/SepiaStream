@@ -44,7 +44,8 @@ set( SEPIA_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/semaphore.h )
 set( UTIL_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/util/threadobject.h
-    ${CMAKE_SOURCE_DIR}/defs/sepia/util/helper.h )
+    ${CMAKE_SOURCE_DIR}/defs/sepia/util/helper.h
+    ${CMAKE_SOURCE_DIR}/defs/sepia/util/progargs.h )
 
 set( COMPRESSION_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/compression/common.h
