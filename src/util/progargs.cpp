@@ -65,16 +65,11 @@ const std::string ProgArgs::value( const std::string& a_string, bool* a_valid )
     }
 }
 
-void ProgArgs::addOptionDefaults( const std::string& a_option, const std::string& a_value, const std::string& a_description )
-{
-    sm_defaults[ a_option ] = std::make_pair( a_value, a_description );
-}
-
 void ProgArgs::printHelp()
 {
     for( const auto& item : sm_defaults )
     {
-        std::cerr << item.first << " :" << item.second.second << std::endl;
+        std::cerr << "\t --" << item.first << ": " << item.second.second << " (default: " << item.second.first << ")" << std::endl;
     }
 }
 
