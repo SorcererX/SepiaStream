@@ -98,5 +98,9 @@ void ProgArgs::printHelp()
     }
 }
 
+void ProgArgs::addOptionDefaults( const std::string& a_option, const std::string& a_description )
+{
+    sm_defaults[ a_option ] = std::make_pair( std::string(), a_description );
+}
 }
 }

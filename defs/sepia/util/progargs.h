@@ -18,6 +18,7 @@ public:
     static const std::string value( const std::string& a_string, bool* a_valid = NULL );
     template <typename T> static T value( const std::string& a_string, bool* a_valid = NULL );
 
+    static void addOptionDefaults( const std::string& a_option, const std::string& a_description );
     template <typename T> static void addOptionDefaults( const std::string& a_option, T* a_value, const std::string& a_description );
     static void printHelp();
 
