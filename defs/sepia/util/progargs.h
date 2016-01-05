@@ -22,6 +22,9 @@ public:
     template <typename T> static void addOptionDefaults( const std::string& a_option, T* a_value, const std::string& a_description );
     static void printHelp();
 
+protected:
+    static void addDefault( const std::string& a_option, const std::string& a_value, const std::string& a_description );
+
 private:
     ProgArgs() = delete;
     static std::map< std::string, std::string > sm_LongArgs;
@@ -63,7 +66,7 @@ template<typename T> inline void ProgArgs::addOptionDefaults( const std::string&
                                                         T* a_value,
                                                         const std::string& a_description )
 {
-    sm_defaults[ a_option ] = std::make_pair( std::to_string( *a_value ), a_description );
+    addDefault( a_option, std::to_string( *a_value ), a_description );
 
     if( contains( a_option ) )
     {
@@ -80,7 +83,7 @@ template<> inline void ProgArgs::addOptionDefaults< std::string >( const std::st
                                               std::string* a_value,
                                               const std::string& a_description )
 {
-    sm_defaults[ a_option ] = std::make_pair( *a_value, a_description );
+    addDefault( a_option, *a_value, a_description );
 
     if( contains( a_option ) )
     {

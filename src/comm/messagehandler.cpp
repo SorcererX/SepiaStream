@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <sepia/comm/messagehandler.h>
 #include <boost/interprocess/ipc/message_queue.hpp>
+#include "boost/date_time/posix_time/posix_time_types.hpp"
 
 using boost::interprocess::message_queue;
 using boost::interprocess::create_only;
