@@ -14,10 +14,7 @@ addons:
     - clang
     - protobuf-compiler
     - libprotobuf-dev
-    - libboost-dev
-
-before_install:
-  - sudo apt-get -qq update
+    - libboost1.55-dev
 
 before_script:
   - mkdir build
