@@ -12,11 +12,12 @@ addons:
     - gcc-4.8
     - g++-4.8
     - clang
+    - protobuf-compiler
+    - libprotobuf-dev
+    - boost
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y protobuf-compiler
-  - sudo apt-get install -y libprotobuf-dev
 
 before_script:
   - mkdir build
