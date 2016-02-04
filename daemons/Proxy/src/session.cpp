@@ -2,7 +2,6 @@
 #include "msgsocket.h"
 #include <sepia/comm/dispatcher.h>
 #include <sepia/comm/observer.h>
-#include <sepia/comm/header.pb.h>
 
 using sepia::network::TcpSocket;
 

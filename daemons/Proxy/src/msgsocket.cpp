@@ -1,6 +1,6 @@
 #include <msgsocket.h>
 #include <sepia/network/tcpsocket.h>
-#include <sepia/comm/header.pb.h>
+#include "header.pb.h"
 
 const size_t BUFFER_SIZE = 16384; // 16 KiB
 
