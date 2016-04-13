@@ -17,6 +17,8 @@ if(LIBDE265_SUPPORT)
 
         GIT_REPOSITORY "https://github.com/strukturag/libde265.git"
         GIT_TAG "master"
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
         INSTALL_COMMAND ""
         )
     ExternalProject_Get_Property(libde265 source_dir)
@@ -90,12 +92,9 @@ if(BUILD_COMM)
     target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES})
 endif(BUILD_COMM)
 
-
-if(LIBDE265_SUPPORT)
-endif(LIBDE265_SUPPORT)
-
 if(LIBDE265_SUPPORT)
     target_link_libraries(${PROJECT_NAME} -lde265 )
+    add_dependencies( ${PROJECT_NAME} libde265 )
 endif(LIBDE265_SUPPORT)
 
 add_subdirectory(examples)
