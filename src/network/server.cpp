@@ -29,6 +29,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sepia/network/tcpsocket.h>
 #include <sepia/reader.h>
 
+#ifdef LIBDE265_SUPPORT
+#include <libde265/en265.h>
+#include <libde265/image.h>
+#endif // LIBDE265_SUPPORT
+
+#include <string.h> // memcpy
+
 namespace sepia
 {
 namespace network
@@ -94,6 +101,12 @@ void Server::dispatchSocket( int hsock )
 
 void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_socket )
 {
+    unsigned int version;
+    unsigned int options;
+
+    a_socket->receive( version );
+    a_socket->receive( options );
+
     std::string name;
     try
     {
@@ -105,6 +118,9 @@ void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_sock
         delete a_socket;
         return ;
     }
+#ifdef LIBDE265_SUPPORT
+    de265_image* encode_image;
+#endif
 
     sepia::Reader data( name );
 
@@ -126,7 +142,24 @@ void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_sock
         delete a_socket;
         return ;
     }
+    bool encode_enabled = options & ( 1 << 0 );
 
+    if( encode_enabled )
+    {
+#ifdef LIBDE265_SUPPORT
+        de265_init();
+        m_h265Encoder = en265_new_encoder();
+        encode_image = en265_allocate_image( m_h265Encoder,
+                                             width,
+                                             height,
+                                             de265_chroma_mono,
+                                             0,
+                                             NULL );
+#elif
+        std::cerr << "Client requested encoded data, but no we have no support, ignoring." << std::endl;
+        encode_enabled = false;
+#endif
+    }
     while( !m_terminate )
     {
         for( int i = 0; i < data.getGroupHeader()->count; i++ )
@@ -134,7 +167,30 @@ void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_sock
             try
             {
                 a_socket->send( *data.getHeader( i ) );
-                a_socket->send( data.getAddress( i ), data.getSize( i ) );
+
+                if( encode_enabled )
+                {
+                    // encode here
+                    uint8_t* p = encode_image->get_image_plane( 0 );
+                    int stride = encode_image->get_image_stride( 0 );
+
+                    for( int h = 0; h < height; h++ )
+                    {
+                        memcpy( p, data.getAddress( i ), width );
+                        p += stride;
+                    }
+                    en265_push_image( m_h265Encoder, encode_image );
+
+                    en265_encode( m_h265Encoder );
+
+                    en265_packet* pck = en265_get_packet( m_h265Encoder, 0 ); // 0 is no timeout, -1 is forever blocking
+                    a_socket->send( pck->length );
+                    a_socket->send( reinterpret_cast< const char* >( pck->data ), pck->length );
+                }
+                else
+                {
+                    a_socket->send( data.getAddress( i ), data.getSize( i ) );
+                }
             }
             catch( std::string a_error )
             {

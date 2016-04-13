@@ -1,9 +1,28 @@
 project(SepiaStream)
+include( ExternalProject )
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O0")
+
+cmake_minimum_required(VERSION 2.8)
 
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
 set(BUILD_COMM ON CACHE BOOL "Include Communication library (requires Boost and Protobuf)")
 set(BUILD_DAEMONS ON CACHE BOOL "Build daemons")
+set(LIBDE265_SUPPORT ON CACHE BOOL "Include libde265 support" )
+
+if(LIBDE265_SUPPORT)
+    ExternalProject_Add(
+        libde265
+        PREFIX libde265
+
+        GIT_REPOSITORY "https://github.com/strukturag/libde265.git"
+        GIT_TAG "master"
+        INSTALL_COMMAND ""
+        )
+    ExternalProject_Get_Property(libde265 source_dir)
+    include_directories(${source_dir})
+    add_definitions(-DLIBDE265_SUPPORT)
+endif(LIBDE265_SUPPORT)
 
 if(BUILD_COMM)
     find_package(Protobuf REQUIRED)
@@ -29,7 +48,6 @@ if(BUILD_COMM)
     install( FILES ${CMAKE_CURRENT_BINARY_DIR}/header.pb.h DESTINATION include/sepia/comm )
 endif(BUILD_COMM)
 
-cmake_minimum_required(VERSION 2.8)
 set( NETWORK_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/network/tcpsocket.h
     ${CMAKE_SOURCE_DIR}/defs/sepia/network/client.h
@@ -64,12 +82,21 @@ include_directories(defs/sepia)
 include_directories(defs/sepia/network)
 include_directories(defs/sepia/util)
 include_directories(defs/sepia/compression)
+
 add_library( ${PROJECT_NAME} ${SRC_LIST} ${HEADER_FILES} ${PROTO_SRCS} ${PROTO_HDRS} )
 target_link_libraries( ${PROJECT_NAME} -lrt )
 
 if(BUILD_COMM)
     target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES})
 endif(BUILD_COMM)
+
+
+if(LIBDE265_SUPPORT)
+endif(LIBDE265_SUPPORT)
+
+if(LIBDE265_SUPPORT)
+    target_link_libraries(${PROJECT_NAME} -lde265 )
+endif(LIBDE265_SUPPORT)
 
 add_subdirectory(examples)
 add_subdirectory(daemons)
