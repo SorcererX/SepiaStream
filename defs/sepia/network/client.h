@@ -3,7 +3,6 @@
 #include <atomic>
 #include <string>
 #include <thread>
-#include <libde265/de265.h>
 
 namespace sepia
 {
@@ -26,7 +25,6 @@ private:
     bool m_useCompression;
     std::atomic_bool m_terminate;
     std::thread m_thread;
-    de265_decoder_context* m_h265Decoder;
 };
 }
 }

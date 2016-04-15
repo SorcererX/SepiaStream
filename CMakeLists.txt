@@ -8,23 +8,6 @@ cmake_minimum_required(VERSION 2.8)
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
 set(BUILD_COMM ON CACHE BOOL "Include Communication library (requires Boost and Protobuf)")
 set(BUILD_DAEMONS ON CACHE BOOL "Build daemons")
-set(LIBDE265_SUPPORT ON CACHE BOOL "Include libde265 support" )
-
-if(LIBDE265_SUPPORT)
-    ExternalProject_Add(
-        libde265
-        PREFIX libde265
-
-        GIT_REPOSITORY "https://github.com/strukturag/libde265.git"
-        GIT_TAG "master"
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ""
-        )
-    ExternalProject_Get_Property(libde265 source_dir)
-    include_directories(${source_dir})
-    add_definitions(-DLIBDE265_SUPPORT)
-endif(LIBDE265_SUPPORT)
 
 if(BUILD_COMM)
     find_package(Protobuf REQUIRED)
@@ -91,11 +74,6 @@ target_link_libraries( ${PROJECT_NAME} -lrt )
 if(BUILD_COMM)
     target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES})
 endif(BUILD_COMM)
-
-if(LIBDE265_SUPPORT)
-    target_link_libraries(${PROJECT_NAME} -lde265 )
-    add_dependencies( ${PROJECT_NAME} libde265 )
-endif(LIBDE265_SUPPORT)
 
 add_subdirectory(examples)
 add_subdirectory(daemons)

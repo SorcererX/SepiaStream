@@ -36,8 +36,6 @@ class Server
         std::atomic_bool m_terminate;
         std::thread m_thread;
         std::vector< std::thread > m_connections;
-        void* m_h265Encoder;
-
 };
 
 }
