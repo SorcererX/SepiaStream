@@ -23,6 +23,7 @@ public:
         u_int32_t width;
         u_int32_t height;
         u_int32_t frame_number;
+        u_int32_t frame_counter;
         u_int32_t tv_sec;
         u_int32_t tv_usec;
         u_int32_t gpi_level;

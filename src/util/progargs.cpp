@@ -100,7 +100,7 @@ void ProgArgs::printHelp()
 
 void ProgArgs::addDefault( const std::string& a_option, const std::string& a_value, const std::string& a_description )
 {
- sm_defaults[ a_option ] = std::make_pair( a_value, a_description );  
+    sm_defaults[ a_option ] = std::make_pair( a_value, a_description );
 }
 
 void ProgArgs::addOptionDefaults( const std::string& a_option, const std::string& a_description )

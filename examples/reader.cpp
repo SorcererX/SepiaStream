@@ -6,7 +6,7 @@
 
 int main( int argc, char** argv )
 {
-    sepia::Reader reader( "/image_TEST" );
+    sepia::Reader reader( "/image" );
 
     while( true )
     {
@@ -14,14 +14,16 @@ int main( int argc, char** argv )
         {
             std::cout << "image: " << i << std::flush;
             int64_t sum = 0;
+            const int width = reader.getHeader(i)->width;
+            const int height = reader.getHeader(i)->height;
 
             unsigned char* array = reinterpret_cast< unsigned char* >( reader.getAddress( i ) );
 
-            for( int y = 0; y < reader.getHeader(i)->height; y++ )
+            for( int y = 0; y < height; y++ )
             {
-                for( int x = 0; x < reader.getHeader(i)->width; x++ )
+                for( int x = 0; x < width; x++ )
                 {
-                    sum += array[ y * reader.getHeader(i)->width + x ];
+                    sum += array[ y * width + x ];
                 }
             }
             std::cout << " sum: " << sum << std::endl;

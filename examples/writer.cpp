@@ -16,6 +16,7 @@ int main( int argc, char** argv )
     sepia::Writer writer( "/image", 2, 1280, 1024, 8 );
     while( true )
     {
+        usleep( 10000 ); // wait 10 ms
         std::cout << "." << std::flush;
         writer.copyWrite( 0, image.data() );
         writer.copyWrite( 1, image.data() );
