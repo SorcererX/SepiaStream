@@ -1,12 +1,14 @@
 project(SepiaStream)
 include( ExternalProject )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O0 -pthread -lrt")
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 cmake_minimum_required(VERSION 2.8)
 
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
-set(BUILD_COMM ON CACHE BOOL "Include Communication library (requires Boost and Protobuf)")
+set(BUILD_COMM OFF CACHE BOOL "Include deprecated Communication library (requires Boost and Protobuf)")
+set(BUILD_COMM2 ON CACHE BOOL "Include Communication library (requires ZeroMQ and FlatBuffers)")
 set(BUILD_DAEMONS ON CACHE BOOL "Build daemons")
 
 if(BUILD_COMM)
@@ -33,6 +35,21 @@ if(BUILD_COMM)
     install( FILES ${CMAKE_CURRENT_BINARY_DIR}/header.pb.h DESTINATION include/sepia/comm )
 endif(BUILD_COMM)
 
+if(BUILD_COMM2)
+    find_package(FlatBuffers REQUIRED)
+    set( COMM2_INCLUDES
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/dispatcher.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observer.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observerbase.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagesender.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagereceiver.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/globalreceiver.h )
+     aux_source_directory(src/comm2 SRC_LIST)
+     include_directories(defs/sepia/comm2)
+     install( FILES ${COMM2_INCLUDES} DESTINATION include/sepia/comm2 )
+endif(BUILD_COMM2)
+
+
 set( NETWORK_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/network/tcpsocket.h
     ${CMAKE_SOURCE_DIR}/defs/sepia/network/client.h
@@ -57,7 +74,7 @@ set( COMPRESSION_INCLUDES
     ${CMAKE_SOURCE_DIR}/defs/sepia/compression/compress.h
     ${CMAKE_SOURCE_DIR}/defs/sepia/compression/enc3b11b.h )
 
-set( HEADER_FILES ${NETWORK_INCLUDES} ${SEPIA_INCLUDES} ${COMM_INCLUDES} ${UTIL_INCLUDES} ${COMPRESSION_INCLUDES} )
+set( HEADER_FILES ${NETWORK_INCLUDES} ${SEPIA_INCLUDES} ${COMM_INCLUDES} ${COMM2_INCLUDES} ${UTIL_INCLUDES} ${COMPRESSION_INCLUDES} )
 aux_source_directory(src SRC_LIST)
 aux_source_directory(src/network SRC_LIST)
 aux_source_directory(src/util SRC_LIST)
@@ -68,12 +85,18 @@ include_directories(defs/sepia/network)
 include_directories(defs/sepia/util)
 include_directories(defs/sepia/compression)
 
-add_library( ${PROJECT_NAME} ${SRC_LIST} ${HEADER_FILES} ${PROTO_SRCS} ${PROTO_HDRS} )
-target_link_libraries( ${PROJECT_NAME} -lrt )
+add_library( ${PROJECT_NAME} ${SRC_LIST} ${HEADER_FILES} ${PROTO_SRCS} ${PROTO_HDRS}  )
 
 if(BUILD_COMM)
     target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES})
 endif(BUILD_COMM)
+
+if(BUILD_COMM2)
+    target_link_libraries( ${PROJECT_NAME} -lzmq )
+    target_link_libraries( ${PROJECT_NAME} ${FLATBUFFERS_LIBRARIES})
+endif(BUILD_COMM2)
+
+target_link_libraries( ${PROJECT_NAME} -lrt )
 
 add_subdirectory(examples)
 add_subdirectory(daemons)

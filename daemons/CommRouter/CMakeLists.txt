@@ -1,0 +1,11 @@
+if(BUILD_COMM2)
+project( commrouter )
+include_directories( "${CMAKE_SOURCE_DIR}/defs" )
+include_directories( "${CMAKE_SOURCE_DIR}/daemons/CommRouter/defs" )
+aux_source_directory( "${CMAKE_SOURCE_DIR}/daemons/CommRouter/src" DAEMON_SRC_LIST )
+
+add_executable( ${PROJECT_NAME} ${DAEMON_SRC_LIST} ${DAEMON_HEADER_FILES} )
+add_dependencies( ${PROJECT_NAME} SepiaStream )
+target_link_libraries( ${PROJECT_NAME} SepiaStream )
+target_link_libraries( ${PROJECT_NAME} -lrt )
+endif(BUILD_COMM2)
