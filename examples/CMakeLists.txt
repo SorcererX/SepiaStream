@@ -3,6 +3,7 @@ if(BUILD_EXAMPLES)
     include_directories( "${CMAKE_SOURCE_DIR}/defs" )
 
     add_subdirectory( commtester )
+    add_subdirectory( comm2tester )
 
     add_executable( reader reader.cpp )
     add_dependencies( reader SepiaStream )

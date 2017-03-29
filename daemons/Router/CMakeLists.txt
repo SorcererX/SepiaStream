@@ -1,3 +1,4 @@
+if(BUILD_COMM)
 project( router )
 include_directories( "${CMAKE_SOURCE_DIR}/defs" )
 include_directories( "${CMAKE_SOURCE_DIR}/daemons/Router/defs" )
@@ -8,5 +9,6 @@ set( DAEMON_HEADER_FILES
 
 add_executable( ${PROJECT_NAME} ${DAEMON_SRC_LIST} ${DAEMON_HEADER_FILES} )
 add_dependencies( ${PROJECT_NAME} SepiaStream )
-target_link_libraries( ${PROJECT_NAME} SepiaStream )
+#target_link_libraries( ${PROJECT_NAME} SepiaStream )
 target_link_libraries( ${PROJECT_NAME} -lrt )
+endif(BUILD_COMM)

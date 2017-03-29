@@ -24,7 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "messagerouter.h"
-#include <messagehandler.h>
+#include <sepia/comm/messagehandler.h>
 #include <sepia/comm/observer.h>
 #include <sepia/comm/dispatcher.h>
 #include "processmonitor.h"
