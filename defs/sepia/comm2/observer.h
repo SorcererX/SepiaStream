@@ -44,8 +44,8 @@ protected:
 
     void process( const char* a_buffer )
     {
-        std::unique_ptr< MessageName > message;
-        message.ParseFromArray( a_buffer );
+        std::unique_ptr< MessageName > message = std::unique_ptr< MessageName >( new MessageName() );
+        message->ParseFromArray( a_buffer, strlen( a_buffer ) );
         receive( message );
     }
 

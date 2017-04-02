@@ -25,7 +25,7 @@ namespace comm2
             std::vector< char > buffer( a_message->ByteSize() );
             a_message->SerializeToArray( buffer.data(), a_message->ByteSize() );
 
-            rawSend( MessageName::default_instance().GetTypeName(), buffer.data(), buffer.size(), a_local );
+            rawSend( MessageName::default_instance().GetTypeName(), reinterpret_cast< const unsigned char* >( buffer.data() ), buffer.size(), a_local );
          }
 
          static void localSend( const MessageName* a_message )

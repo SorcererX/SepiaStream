@@ -24,9 +24,11 @@ int main( int argc, char** argv )
         std::cout << "Usage:" << std::endl;
         std::cout << argv[0] << "<message count> <receive count> <message delay> <mode>" << std::endl;
         std::cout << "where mode is: " << std::endl;
-        std::cout << "0 - local send" << std::endl;
-        std::cout << "1 - global send" << std::endl;
-        std::cout << "2 - only receive" << std::endl;
+        std::cout << "0 - local send (flatbuffers)" << std::endl;
+        std::cout << "1 - global send (flatbuffers)" << std::endl;
+        std::cout << "2 - local send (protobuf)" << std::endl;
+        std::cout << "3 - global send (protobuf)" << std::endl;
+        std::cout << "4 - only receive" << std::endl;
         return 1;
     }
 
@@ -72,7 +74,37 @@ int main( int argc, char** argv )
                 usleep( 1000 * message_delay );
             }
         }
-        std::cout << "Send completed." << std::endl;
+        std::cout << "Flatbuffer Send completed." << std::endl;
+    }
+    else if( mode == 3 || mode == 4 )
+    {
+        comm2tester_msgs::ProtoTest message;
+
+        auto now = std::chrono::system_clock::now();
+        struct timeval time_value;
+
+        std::cout << "Waiting 200 ms after starting receivers before starting send..." << std::endl;
+        usleep( 200000 );
+        std::cout << "Starting send." << std::endl;
+        for( int i = 0; i < message_count; i++ )
+        {
+            message.set_seq_no( i );
+            now = std::chrono::system_clock::now();
+            message.set_time( now.time_since_epoch().count() );
+            if( mode == 0 )
+            {
+                sepia::comm2::Dispatcher< comm2tester_msgs::ProtoTest >::localSend( &message );
+            }
+            else
+            {
+                sepia::comm2::Dispatcher< comm2tester_msgs::ProtoTest >::send( &message );
+            }
+            if( message_delay > 0 )
+            {
+                usleep( 1000 * message_delay );
+            }
+        }
+        std::cout << "Protobuf Send completed." << std::endl;
     }
     std::cout << "Waiting to receive messages..." << std::endl;
 
