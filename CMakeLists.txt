@@ -10,11 +10,16 @@ set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
 set(BUILD_COMM OFF CACHE BOOL "Include deprecated Communication library (requires Boost and Protobuf)")
 set(BUILD_COMM2 ON CACHE BOOL "Include Communication library (requires ZeroMQ and FlatBuffers)")
 set(BUILD_DAEMONS ON CACHE BOOL "Build daemons")
+set(WITH_PROTOBUF ON CACHE BOOL "Add Protobuf support (required for comm)" )
+set(WITH_FLATBUFFERS ON CACHE BOOL "Add Flatbuffers support" )
 
-if(BUILD_COMM)
+if(WITH_PROTOBUF)
     find_package(Protobuf REQUIRED)
     include_directories(${PROTOBUF_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
+endif(WITH_PROTOBUF)
+
+if(BUILD_COMM)
     PROTOBUF_GENERATE_CPP(PROTO_SRCS
                           PROTO_HDRS
                           ${CMAKE_SOURCE_DIR}/src/comm/header.proto
@@ -35,8 +40,11 @@ if(BUILD_COMM)
     install( FILES ${CMAKE_CURRENT_BINARY_DIR}/header.pb.h DESTINATION include/sepia/comm )
 endif(BUILD_COMM)
 
-if(BUILD_COMM2)
+if(WITH_FLATBUFFERS)
     find_package(FlatBuffers REQUIRED)
+endif(WITH_FLATBUFFERS)
+
+if(BUILD_COMM2)
     set( COMM2_INCLUDES
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/dispatcher.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observer.h
@@ -87,14 +95,17 @@ include_directories(defs/sepia/compression)
 
 add_library( ${PROJECT_NAME} ${SRC_LIST} ${HEADER_FILES} ${PROTO_SRCS} ${PROTO_HDRS}  )
 
-if(BUILD_COMM)
+if(WITH_PROTOBUF)
     target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES})
-endif(BUILD_COMM)
+endif(WITH_PROTOBUF)
 
 if(BUILD_COMM2)
     target_link_libraries( ${PROJECT_NAME} -lzmq )
-    target_link_libraries( ${PROJECT_NAME} ${FLATBUFFERS_LIBRARIES})
 endif(BUILD_COMM2)
+
+if(WITH_FLATBUFFERS)
+    target_link_libraries( ${PROJECT_NAME} ${FLATBUFFERS_LIBRARIES})
+endif(WITH_FLATBUFFERS)
 
 target_link_libraries( ${PROJECT_NAME} -lrt )
 

@@ -3,24 +3,63 @@
 #include <sepia/comm2/observerbase.h>
 #include <iostream>
 #include <flatbuffers/flatbuffers.h>
+#include <google/protobuf/message_lite.h>
 
 namespace sepia
 {
 namespace comm2
 {
 
-template< class MessageName >
+template< class MessageName, typename Enable = void >
 class Observer : public ObserverBase
 {
 public:
-    ~Observer()
-    {
-    }
+    ~Observer();
+protected:
+    Observer();
+    void initReceiver();
+    void destroyReceiver();
+    void process( const char* a_buffer );
+    virtual void receive( const std::unique_ptr< MessageName >& msg ) = 0;
+};
+
+template< typename MessageName >
+class Observer< MessageName, typename std::enable_if< std::is_base_of< google::protobuf::MessageLite, MessageName >::value >::type > : public ObserverBase
+{
+public:
+    ~Observer() {}
 
 protected:
-    Observer()
+    Observer() {}
+
+    void initReceiver()
     {
+        ObserverBase::addObserver( MessageName::default_instance().GetTypeName(), this );
     }
+
+    void destroyReceiver()
+    {
+        ObserverBase::removeObserver( MessageName::default_instance().GetTypeName(), this );
+    }
+
+    void process( const char* a_buffer )
+    {
+        std::unique_ptr< MessageName > message;
+        message.ParseFromArray( a_buffer );
+        receive( message );
+    }
+
+    virtual void receive( const std::unique_ptr< MessageName >& msg ) = 0;
+};
+
+template< typename MessageName >
+class Observer< MessageName, typename std::enable_if< std::is_base_of< flatbuffers::NativeTable, MessageName >::value >::type > : public ObserverBase
+{
+public:
+    ~Observer() {}
+
+protected:
+    Observer() {}
 
     void initReceiver()
     {
