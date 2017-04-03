@@ -22,17 +22,27 @@ namespace comm2
       public:
          static void send( const MessageName* a_message, bool a_local = false )
          {
-            std::vector< char > buffer( a_message->ByteSize() );
-            a_message->SerializeToArray( buffer.data(), a_message->ByteSize() );
+            const size_t bytesize = a_message->ByteSize();
 
-            rawSend( MessageName::default_instance().GetTypeName(), reinterpret_cast< const unsigned char* >( buffer.data() ), buffer.size(), a_local );
+            if( bytesize > stm_buffer.size() )
+            {
+                stm_buffer.resize( bytesize * 1.5 );
+            }
+            a_message->SerializeToArray( stm_buffer.data(), bytesize );
+
+            rawSend( MessageName::default_instance().GetTypeName(), reinterpret_cast< const unsigned char* >( stm_buffer.data() ), bytesize, a_local );
          }
 
          static void localSend( const MessageName* a_message )
          {
              send( a_message, true );
          }
+   private:
+         static thread_local std::vector< char > stm_buffer;
    };
+
+   template< typename MessageName >
+   thread_local std::vector< char > Dispatcher< MessageName, typename std::enable_if< std::is_base_of< google::protobuf::MessageLite, MessageName >::value >::type >::stm_buffer;
 
    template< typename MessageName >
    class Dispatcher< MessageName, typename std::enable_if< std::is_base_of< flatbuffers::NativeTable, MessageName >::value >::type > : protected MessageSender

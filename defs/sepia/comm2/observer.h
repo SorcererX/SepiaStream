@@ -30,7 +30,7 @@ public:
     ~Observer() {}
 
 protected:
-    Observer() {}
+    Observer() : m_msg( std::unique_ptr< MessageName >( new MessageName ) ) { }
 
     void initReceiver()
     {
@@ -44,17 +44,15 @@ protected:
 
     void process( const char* a_buffer )
     {
-        stm_msg->ParseFromArray( a_buffer, strlen( a_buffer ) );
-        receive( stm_msg );
+        m_msg->ParseFromArray( a_buffer, strlen( a_buffer ) );
+        receive( m_msg );
     }
 
     virtual void receive( const std::unique_ptr< MessageName >& msg ) = 0;
 private:
-    static thread_local std::unique_ptr< MessageName > stm_msg;
+    std::unique_ptr< MessageName > m_msg;
 };
 
-template< typename MessageName >
-thread_local std::unique_ptr< MessageName > Observer< MessageName, typename std::enable_if< std::is_base_of< google::protobuf::MessageLite, MessageName >::value >::type >::stm_msg = std::unique_ptr< MessageName >( new MessageName() );
 
 template< typename MessageName >
 class Observer< MessageName, typename std::enable_if< std::is_base_of< flatbuffers::NativeTable, MessageName >::value >::type > : public ObserverBase
