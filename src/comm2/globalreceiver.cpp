@@ -1,4 +1,5 @@
 #include <sepia/comm2/globalreceiver.h>
+#include <sepia/comm2/internals.h>
 #include <iostream>
 
 namespace sepia
@@ -6,9 +7,8 @@ namespace sepia
 namespace comm2
 {
 
-GlobalReceiver::GlobalReceiver() : m_context( 1 )
-                                 , m_internalSocket( m_context, ZMQ_XPUB )
-                                 , m_externalSocket( m_context, ZMQ_XSUB )
+GlobalReceiver::GlobalReceiver() : m_internalSocket( Internals::sm_context, ZMQ_XPUB )
+                                 , m_externalSocket( Internals::sm_context, ZMQ_XSUB )
 {
 }
 
@@ -24,7 +24,7 @@ void GlobalReceiver::start()
 
 void GlobalReceiver::own_thread()
 {
-    m_internalSocket.bind( "tcp://127.0.0.1:31350" );
+    m_internalSocket.bind( "inproc://internal_pubsub" );
     m_externalSocket.connect( "tcp://127.0.0.1:31339" );
     zmq::proxy( static_cast< void* >( m_externalSocket ), static_cast< void* >( m_internalSocket ), NULL );
     std::cout << "Proxy completed." << std::endl;

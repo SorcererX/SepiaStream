@@ -1,4 +1,5 @@
 #include <sepia/comm2/messagesender.h>
+#include <sepia/comm2/internals.h>
 #include <zmq.hpp>
 #include <iostream>
 
@@ -7,15 +8,14 @@ namespace sepia
 namespace comm2
 {
 
-zmq::context_t MessageSender::sm_context( 1 );
-zmq::socket_t  MessageSender::sm_externalSocket( sm_context, ZMQ_PUB );
-zmq::socket_t  MessageSender::sm_localSocket( sm_context, ZMQ_PUB ) ;
+//zmq::context_t MessageSender::sm_context( 1 );
+zmq::socket_t  MessageSender::sm_externalSocket( Internals::sm_context, ZMQ_PUB );
+zmq::socket_t  MessageSender::sm_localSocket( Internals::sm_context, ZMQ_PUB ) ;
 
 void MessageSender::init()
 {
-    sm_externalSocket.connect( "tcp://127.0.0.1:31340" );
-    sm_localSocket.connect( "tcp://127.0.0.1:31350" );
-    //sm_socket.connect( "ipc:///tmp/cuttlefish_outgoing" );
+    sm_externalSocket.connect( Internals::sm_externalPub );
+    sm_localSocket.connect( Internals::sm_internalPub );
 }
 
 void MessageSender::rawSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize, bool a_local )

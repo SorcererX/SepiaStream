@@ -86,6 +86,7 @@ int main( int argc, char** argv )
         std::cout << "Waiting 200 ms after starting receivers before starting send..." << std::endl;
         usleep( 200000 );
         std::cout << "Starting send." << std::endl;
+//#pragma omp parallel for
         for( int i = 0; i < message_count; i++ )
         {
             message.set_seq_no( i );

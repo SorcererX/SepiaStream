@@ -19,7 +19,7 @@ public:
 
 private:
     MessageSender() = delete;
-    static zmq::context_t sm_context;
+    //static zmq::context_t sm_context;
     static zmq::socket_t  sm_localSocket;
     static zmq::socket_t  sm_externalSocket;
 };

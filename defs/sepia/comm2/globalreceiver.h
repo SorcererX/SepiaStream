@@ -21,7 +21,6 @@ protected:
     void internal_thread();
 
 private:
-    zmq::context_t m_context;
     zmq::socket_t  m_externalSocket;
     zmq::socket_t  m_internalSocket;
 };

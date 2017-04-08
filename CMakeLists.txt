@@ -51,7 +51,8 @@ if(BUILD_COMM2)
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observerbase.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagesender.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagereceiver.h
-         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/globalreceiver.h )
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/globalreceiver.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/internals.h )
      aux_source_directory(src/comm2 SRC_LIST)
      include_directories(defs/sepia/comm2)
      install( FILES ${COMM2_INCLUDES} DESTINATION include/sepia/comm2 )

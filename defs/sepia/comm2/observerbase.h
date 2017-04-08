@@ -25,7 +25,6 @@ protected:
 private:
     typedef std::map< const std::string, std::unordered_set< ObserverBase* > > ObserverMap;
     static thread_local ObserverMap stm_observers;
-    static thread_local zmq::context_t stm_context;
     static thread_local zmq::socket_t  stm_socket;
     static thread_local bool stm_initialized;
 };

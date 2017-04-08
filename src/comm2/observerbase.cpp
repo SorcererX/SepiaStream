@@ -1,6 +1,7 @@
 #include <sepia/comm2/observerbase.h>
 #include <iostream>
 #include <unistd.h>
+#include <sepia/comm2/internals.h>
 
 namespace sepia
 {
@@ -8,8 +9,7 @@ namespace comm2
 {
 
 thread_local ObserverBase::ObserverMap ObserverBase::stm_observers;
-thread_local zmq::context_t ObserverBase::stm_context( 1 );
-thread_local zmq::socket_t  ObserverBase::stm_socket( stm_context, ZMQ_SUB );
+thread_local zmq::socket_t  ObserverBase::stm_socket( Internals::sm_context, ZMQ_SUB );
 thread_local bool ObserverBase::stm_initialized( false );
 
 void ObserverBase::addObserver( const std::string& a_name, ObserverBase* a_observer )
@@ -71,7 +71,7 @@ void ObserverBase::threadReceiver()
 {
     if( !stm_initialized )
     {
-        stm_socket.connect( "tcp://127.0.0.1:31350" ); // 31350 for internal.
+        stm_socket.connect( Internals::sm_internalSub );
         stm_initialized = true;
     }
 
