@@ -10,19 +10,19 @@ int main( int argc, char** argv )
 {
     int message_count = 0;
     int receive_count = 0;
-    double message_delay = 0;
+    int message_delay = 0;
     int mode = 0;
     if( argc == 5 )
     {
         message_count = std::stoi( argv[1] );
         receive_count = std::stoi( argv[2] );
-        message_delay = std::stod( argv[3] );
+        message_delay = std::stoi( argv[3] );
         mode = std::stoi( argv[4] );
     }
     else
     {
         std::cout << "Usage:" << std::endl;
-        std::cout << argv[0] << "<message count> <receive count> <message delay> <mode>" << std::endl;
+        std::cout << argv[0] << " <message count> <receive count> <delay every nth message> <mode>" << std::endl;
         std::cout << "where mode is: " << std::endl;
         std::cout << "0 - local send (flatbuffers)" << std::endl;
         std::cout << "1 - global send (flatbuffers)" << std::endl;
@@ -71,7 +71,10 @@ int main( int argc, char** argv )
             }
             if( message_delay > 0 )
             {
-                usleep( 1000 * message_delay );
+                if( i % message_delay == 0 )
+                {
+                    usleep( 1 );
+                }
             }
         }
         std::cout << "Flatbuffer Send completed." << std::endl;
@@ -102,7 +105,10 @@ int main( int argc, char** argv )
             }
             if( message_delay > 0 )
             {
-                usleep( 1000 * message_delay );
+                if( i % message_delay == 0 )
+                {
+                    usleep( 1 );
+                }
             }
         }
         std::cout << "Protobuf Send completed." << std::endl;
