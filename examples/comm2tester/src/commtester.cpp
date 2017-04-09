@@ -122,6 +122,7 @@ int main( int argc, char** argv )
             }
         }
     }
+    receiver.stop();
 
     for( int i = 0; i < m_receivers.size(); i++ )
     {

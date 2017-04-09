@@ -18,19 +18,39 @@ void MessageSender::init()
     sm_localSocket.connect( Internals::sm_internalPub );
 }
 
+void MessageSender::destroy()
+{
+    sm_externalSocket.close();
+    sm_localSocket.close();
+}
+
 void MessageSender::rawSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize, bool a_local )
 {
     //std::cout << __PRETTY_FUNCTION__ << " called." << std::endl;
     bool ok = false;
     if( !a_local )
     {
-        ok = sm_externalSocket.send( a_name.data(), a_name.size(), ZMQ_SNDMORE );
-        ok = sm_externalSocket.send( a_msg, a_msgSize );
+        try
+        {
+            ok = sm_externalSocket.send( a_name.data(), a_name.size(), ZMQ_SNDMORE );
+            ok = sm_externalSocket.send( a_msg, a_msgSize );
+        }
+        catch( const zmq::error_t& ex )
+        {
+            //std::cout << __PRETTY_FUNCTION__ << " " << ex.what() << std::endl;
+        }
     }
     else
     {
-        ok = sm_localSocket.send( a_name.data(), a_name.size(), ZMQ_SNDMORE );
-        ok = sm_localSocket.send( a_msg, a_msgSize );
+        try
+        {
+            ok = sm_localSocket.send( a_name.data(), a_name.size(), ZMQ_SNDMORE );
+            ok = sm_localSocket.send( a_msg, a_msgSize );
+        }
+        catch( const zmq::error_t& ex )
+        {
+            //std::cout << __PRETTY_FUNCTION__ << " " << ex.what() << std::endl;
+        }
     }
 }
 }

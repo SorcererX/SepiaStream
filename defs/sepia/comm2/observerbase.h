@@ -14,7 +14,7 @@ class ObserverBase
 {
 public:
     ~ObserverBase() {}
-    static void threadReceiver();
+    static bool threadReceiver();
 
 protected:
     ObserverBase() {}

@@ -26,9 +26,8 @@ void ReceiveTester::own_thread()
 {
     sepia::comm2::Observer< comm2tester_msgs::TestT >::initReceiver();
     sepia::comm2::Observer< comm2tester_msgs::ProtoTest >::initReceiver();
-    while( !m_terminate )
+    while( sepia::comm2::ObserverBase::threadReceiver() )
     {
-        sepia::comm2::ObserverBase::threadReceiver();
     }
     sepia::comm2::Observer< comm2tester_msgs::TestT >::destroyReceiver();
     sepia::comm2::Observer< comm2tester_msgs::ProtoTest >::destroyReceiver();

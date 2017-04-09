@@ -25,7 +25,7 @@ void ObserverBase::addObserver( const std::string& a_name, ObserverBase* a_obser
         std::unordered_set< ObserverBase* > temp;
         temp.insert( a_observer );
         stm_observers[ a_name ] = temp;
-        std::cout << "Subscribing to: " << a_name << std::endl;
+        //std::cout << "Subscribing to: " << a_name << std::endl;
         stm_socket.setsockopt( ZMQ_SUBSCRIBE, a_name.data(), a_name.size() );
         //sm_socket.setsockopt( ZMQ_SUBSCRIBE, NULL, 0 );
     }
@@ -42,8 +42,15 @@ void ObserverBase::removeObserver(const std::string& a_name, ObserverBase* a_obs
         if( it->second.size() == 0 )
         {
             stm_observers.erase( it );
-            std::cout << "Unsubscribing to: " << a_name << std::endl;
-            stm_socket.setsockopt( ZMQ_UNSUBSCRIBE, a_name );
+            //std::cout << "Unsubscribing to: " << a_name << std::endl;
+            try
+            {
+                stm_socket.setsockopt( ZMQ_UNSUBSCRIBE, a_name );
+            }
+            catch( const zmq::error_t& ex )
+            {
+                //std::cout << __PRETTY_FUNCTION__ << " " << ex.what() << std::endl;
+            }
         }
     }
 }
@@ -67,7 +74,7 @@ void ObserverBase::distribute( const std::string& a_name, const char* a_buffer, 
     }
 }
 
-void ObserverBase::threadReceiver()
+bool ObserverBase::threadReceiver()
 {
     if( !stm_initialized )
     {
@@ -79,19 +86,41 @@ void ObserverBase::threadReceiver()
 
     //std::cout << __PRETTY_FUNCTION__ << " called." << std::endl;
     zmq::message_t name_msg;
-    ok = stm_socket.recv( &name_msg, ZMQ_NOBLOCK );
-    if( !ok )
+    try
     {
-        return ;
+        stm_socket.recv( &name_msg ); // ZMQ_NOBLOCK
     }
+    catch( const zmq::error_t& ex )
+    {
+        if( ex.num() != ETERM )
+        {
+            throw;
+        }
+        stm_socket.close();
+        return false;
+    }
+
     std::string name( static_cast< const char* >( name_msg.data() ), name_msg.size() );
     //std::cout << "-- length: " << name_msg.size() << " name: " << name << std::endl;
 
     zmq::message_t data;
-    stm_socket.recv( &data, 0 );
+    try
+    {
+        stm_socket.recv( &data, 0 );
+    }
+    catch( const zmq::error_t& ex )
+    {
+        if( ex.num() != ETERM )
+        {
+            throw;
+        }
+        stm_socket.close();
+        return false;
+    }
 
     //std::cout << "-- data_length: " << data.size() << std::endl;
     distribute( name, static_cast< char* >( data.data() ), data.size()  );
+    return true;
 }
 
 }
