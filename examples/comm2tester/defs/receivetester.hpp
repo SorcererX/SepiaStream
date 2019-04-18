@@ -13,12 +13,14 @@ public:
     ReceiveTester( const ReceiveTester& a_object );
     void start();
     void stop();
-    int getMessageCount();
+    int64_t getMessageCount();
 
 protected:
     void receive( const std::unique_ptr< comm2tester_msgs::TestT >& a_msg );
     void receive( const std::unique_ptr< comm2tester_msgs::ProtoTest >& a_msg );
     void own_thread();
-    int m_flatbufferMessageCount;
-    int m_protobufMessageCount;
+    int64_t m_flatbufferMessageCount;
+    int64_t m_protobufMessageCount;
+    int64_t m_lastFlatbufferSeqNo;
+    int64_t m_lastProtobufSeqNo;
 };

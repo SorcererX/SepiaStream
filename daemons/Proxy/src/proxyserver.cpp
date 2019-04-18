@@ -1,6 +1,7 @@
 #include "proxyserver.h"
 #include <sepia/network/tcpsocket.h>
 #include "session.h"
+#include <functional>
 
 ProxyServer::ProxyServer( int a_port )
 {

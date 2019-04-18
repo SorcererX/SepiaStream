@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sepia/reader.h>
 
 #include <string.h> // memcpy
+#include <functional>
 
 namespace sepia
 {
@@ -94,18 +95,20 @@ void Server::dispatchSocket( int hsock )
     m_connections.push_back( std::thread( std::bind( &Server::handleSocket, this, hostname, sock ) ) );
 }
 
-void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_socket )
+void Server::handleSocket( const std::string& a_clientHostName, TcpSocket* a_socket )
 {
+    std::cout << "GOT connection" << std::endl;
     unsigned int version;
     unsigned int options;
 
     a_socket->receive( version );
     a_socket->receive( options );
+    std::cout << "version: " << version << " options: " << options << std::endl;
 
     std::string name;
     try
     {
-        a_socket->receive( name );
+        a_socket->receiveString( name );
     }
     catch( std::string a_error )
     {
@@ -114,12 +117,12 @@ void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_sock
         return ;
     }
 
-    sepia::Reader data( name );
+    std::unique_ptr< sepia::Reader > data = std::unique_ptr< sepia::Reader >( new sepia::Reader( name ) );
 
-    unsigned int images = data.getGroupHeader()->count;
-    unsigned int width = data.getHeader(0)->width;
-    unsigned int height = data.getHeader(0)->height;
-    unsigned int bpp = data.getHeader(0)->bpp;
+    unsigned int images = data->getGroupHeader()->count;
+    unsigned int width = data->getHeader(0)->width;
+    unsigned int height = data->getHeader(0)->height;
+    unsigned int bpp = data->getHeader(0)->bpp;
     std::cout << "DEBUG: " << "images: " << images << " w: " << width << " h: " << height << " bpp: " << bpp << std::endl;
     try
     {
@@ -138,12 +141,12 @@ void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_sock
 
     while( !m_terminate )
     {
-        for( int i = 0; i < data.getGroupHeader()->count; i++ )
+        for( int i = 0; i < data->getGroupHeader()->count; i++ )
         {
             try
             {
-                a_socket->send( *data.getHeader( i ) );
-                a_socket->send( data.getAddress( i ), data.getSize( i ) );
+                a_socket->send( *data->getHeader( i ) );
+                a_socket->send( data->getAddress( i ), data->getSize( i ) );
             }
             catch( std::string a_error )
             {
@@ -152,7 +155,7 @@ void Server::handleSocket( const std::string a_clientHostName, TcpSocket* a_sock
                 return ;
             }
         }
-        data.update();
+        data->update();
     }
 }
 }

@@ -15,6 +15,7 @@ public:
     static std::string sm_externalSub;
     static std::string sm_internalPub;
     static std::string sm_internalSub;
+    static std::string sm_externalRequest;
 };
 }
 }

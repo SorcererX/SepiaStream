@@ -28,7 +28,7 @@ class Server
     protected:
         void own_thread();
         void dispatchSocket( int hsock );
-        void handleSocket( const std::string a_clientHostName, sepia::network::TcpSocket* a_socket );
+        void handleSocket(const std::string& a_clientHostName, sepia::network::TcpSocket* a_socket );
 
     private:
         std::string m_host;

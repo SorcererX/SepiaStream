@@ -84,7 +84,7 @@ void Client::own_thread()
     sock.send( version );
     sock.send( options );
     // first send size of name.
-    sock.send( m_name );
+    sock.sendString( m_name );
 
     unsigned int images = 0;
     unsigned int width = 0;
@@ -103,18 +103,18 @@ void Client::own_thread()
     }
     std::cout << "DEBUG: " << "images: " << images << " w: " << width << " h: " << height << " bpp: " << bpp << std::endl;
 
-    sepia::Writer data( m_name, images, width, height, bpp );
+    std::unique_ptr< sepia::Writer > data = std::unique_ptr< sepia::Writer >( new sepia::Writer( m_name, images, width, height, bpp ) );
 
 
     int more = 0; // more data available if true.
     while( !m_terminate )
     {
-        for( int i = 0; i < data.getGroupHeader()->count; i++ )
+        for( int i = 0; i < data->getGroupHeader()->count; i++ )
         {
-            sock.receive( *data.getHeader( i ) );
-            sock.receive( data.getAddress( i ), data.getSize( i ) );
+            sock.receive( *data->getHeader( i ) );
+            sock.receive( data->getAddress( i ), data->getSize( i ) );
         }
-        data.update();
+        data->update();
     }
 }
 

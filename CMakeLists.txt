@@ -1,13 +1,13 @@
 project(SepiaStream)
 include( ExternalProject )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O2 -pthread -lrt")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -fPIC -O2 -pthread -lrt")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 cmake_minimum_required(VERSION 2.8)
 
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
-set(BUILD_COMM OFF CACHE BOOL "Include deprecated Communication library (requires Boost and Protobuf)")
+set(BUILD_COMM ON CACHE BOOL "Include deprecated Communication library (requires Boost and Protobuf)")
 set(BUILD_COMM2 ON CACHE BOOL "Include Communication library (requires ZeroMQ and FlatBuffers)")
 set(BUILD_DAEMONS ON CACHE BOOL "Build daemons")
 set(WITH_PROTOBUF ON CACHE BOOL "Add Protobuf support (required for comm)" )
@@ -52,6 +52,7 @@ if(BUILD_COMM2)
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagesender.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagereceiver.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/globalreceiver.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/requestor.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/internals.h )
      aux_source_directory(src/comm2 SRC_LIST)
      include_directories(defs/sepia/comm2)

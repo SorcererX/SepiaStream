@@ -9,50 +9,54 @@ namespace comm2
 {
 
 //zmq::context_t MessageSender::sm_context( 1 );
-zmq::socket_t  MessageSender::sm_externalSocket( Internals::sm_context, ZMQ_PUB );
-zmq::socket_t  MessageSender::sm_localSocket( Internals::sm_context, ZMQ_PUB ) ;
+zmq::socket_t  MessageSender::sm_externalPubSocket( Internals::sm_context, ZMQ_PUB );
+zmq::socket_t  MessageSender::sm_localPubSocket( Internals::sm_context, ZMQ_PUB ) ;
+zmq::socket_t  MessageSender::sm_externalRequestSocket( Internals::sm_context, ZMQ_REQ );
 
 void MessageSender::init()
 {
-    sm_externalSocket.connect( Internals::sm_externalPub );
-    sm_localSocket.connect( Internals::sm_internalPub );
+    sm_externalPubSocket.connect( Internals::sm_externalPub );
+    sm_localPubSocket.connect( Internals::sm_internalPub );
+    sm_externalRequestSocket.connect( Internals::sm_externalRequest );
 }
 
 void MessageSender::destroy()
 {
-    sm_externalSocket.close();
-    sm_localSocket.close();
+    sm_externalPubSocket.close();
+    sm_localPubSocket.close();
+    sm_externalRequestSocket.close();
+}
+
+void MessageSender::rawSocketSend( zmq::socket_t& a_socket, const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize )
+{
+    bool ok = false;
+    try
+    {
+        ok = a_socket.send( a_name.data(), a_name.size(), ZMQ_SNDMORE );
+        ok = a_socket.send( a_msg, a_msgSize );
+    }
+    catch( const zmq::error_t& ex )
+    {
+        //std::cout << __PRETTY_FUNCTION__ << " " << ex.what() << std::endl;
+    }
 }
 
 void MessageSender::rawSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize, bool a_local )
 {
-    //std::cout << __PRETTY_FUNCTION__ << " called." << std::endl;
-    bool ok = false;
     if( !a_local )
     {
-        try
-        {
-            ok = sm_externalSocket.send( a_name.data(), a_name.size(), ZMQ_SNDMORE );
-            ok = sm_externalSocket.send( a_msg, a_msgSize );
-        }
-        catch( const zmq::error_t& ex )
-        {
-            //std::cout << __PRETTY_FUNCTION__ << " " << ex.what() << std::endl;
-        }
+        rawSocketSend( sm_externalPubSocket, a_name, a_msg, a_msgSize );
     }
     else
     {
-        try
-        {
-            ok = sm_localSocket.send( a_name.data(), a_name.size(), ZMQ_SNDMORE );
-            ok = sm_localSocket.send( a_msg, a_msgSize );
-        }
-        catch( const zmq::error_t& ex )
-        {
-            //std::cout << __PRETTY_FUNCTION__ << " " << ex.what() << std::endl;
-        }
+        rawSocketSend( sm_localPubSocket, a_name, a_msg, a_msgSize );
     }
 }
+
+void MessageSender::rawRequestSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize )
+{
+    rawSocketSend( sm_externalRequestSocket, a_name, a_msg, a_msgSize );
 }
 
+}
 }

@@ -3,6 +3,8 @@
 #include <string>
 #include <errno.h>
 #include <iostream>
+#include <vector>
+#include <cstring>
 
 namespace sepia
 {
@@ -22,8 +24,12 @@ public:
     int getFD() const;
     template< class T > void receive( T& a_data );
     template< class T > void send( T& a_data );
+
     void receive( char* a_data, size_t a_size );
     void send( const char* a_data, size_t a_size );
+    void receiveString( std::string& a_string );
+    void sendString( const std::string& a_string );
+
     void throwError( int a_error );
     void close();
 
@@ -52,6 +58,7 @@ template< class T > void TcpSocket::send( T& a_data )
         throwError( errno );
     }
 }
+
 }
 }
 #endif // SEPIA_SOCKET_H

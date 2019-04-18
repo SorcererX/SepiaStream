@@ -1,4 +1,5 @@
 #include <receivetester.hpp>
+#include <functional>
 
 ReceiveTester::ReceiveTester() : m_messageCount( 0 )
 {

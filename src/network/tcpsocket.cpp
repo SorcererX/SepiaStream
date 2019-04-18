@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <vector>
+#include <netinet/tcp.h>
 
 namespace sepia
 {
@@ -72,12 +73,15 @@ void TcpSocket::init()
         std::cerr << "Error setting SO_REUSEADDR: " << strerror( errno ) << std::endl;
     }
 
+    /*
     if( setsockopt( m_sock, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char*>( &value ), sizeof( value ) ) != 0 )
     {
         std::cerr << "Error setting SO_KEEPALIVE: " << strerror( errno ) << std::endl;
     }
+    */
 
-    value = 2 * 1280 * 1024;
+    value = 262144;
+
 
     if( setsockopt( m_sock, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<char*>( &value ), sizeof( value ) ) != 0 )
     {
@@ -89,6 +93,12 @@ void TcpSocket::init()
         std::cerr << "Error setting SO_SNDBUF: " << strerror( errno ) << std::endl;
     }
 
+/*
+    if( setsockopt( m_sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>( &value ), sizeof( value ) ) != 0 )
+    {
+        std::cerr << "Error setting TCP_NODELAY: " << strerror( errno ) << std::endl;
+    }
+*/
 }
 
 void TcpSocket::fromRawSocket( int a_socket )
@@ -159,7 +169,7 @@ std::string TcpSocket::accept( int a_socket )
     return  std::string( inet_ntoa( addr.sin_addr ) );
 }
 
-template<> void TcpSocket::send< std::string >( std::string& a_string )
+void TcpSocket::sendString( const std::string& a_string )
 {
     short str_size;
     str_size = static_cast< short >( a_string.size() );
@@ -177,13 +187,14 @@ template<> void TcpSocket::send< std::string >( std::string& a_string )
     }
 }
 
-template<> void TcpSocket::receive< std::string >( std::string& a_string )
+void TcpSocket::receiveString( std::string& a_string )
 {
     short str_size = 0;
 
     int err = 0;
     receive( str_size );
 
+    std::cout << "got size: " << str_size << std::endl;
     std::vector< char > array;
     array.assign( str_size, 0 );
 
@@ -222,22 +233,40 @@ void TcpSocket::receive( char* a_data, size_t a_size )
 
 int TcpSocket::rawReceive( char* a_data, size_t a_size )
 {
-    int bytes = ::recv( m_sock, a_data, a_size, MSG_WAITALL );
-    if( bytes != a_size )
+    int bytes_received = 0;
+
+    do
     {
-        std::cerr << "WARN: " << "receive does not match expected. got: " << bytes << " expected: " << a_size << std::endl;
-    }
-    return bytes;
+        int bytes = ::recv( m_sock, a_data+bytes_received, a_size-bytes_received, 0 );
+        if( bytes < 0 )
+        {
+            std::cout << "Received: -1" << std::endl;
+            return -1;
+        }
+        bytes_received += bytes;
+        //std::cout << "DEBUG:" << " received bytes: " << bytes << " out of: " << bytes_received << std::endl;
+
+    } while( bytes_received != a_size );
+
+    return bytes_received;
 }
 
 int TcpSocket::rawSend( const char* a_data, size_t a_size )
 {
-    int bytes = ::send( m_sock, a_data, a_size, MSG_WAITALL );
-    if( bytes != a_size )
+    int bytes_sent = 0;
+    do
     {
-        std::cerr << "WARN: " << "send does not match expected. got: " << bytes << " expected: " << a_size << std::endl;
-    }
-    return bytes;
+        int bytes = ::send( m_sock, a_data+bytes_sent, a_size-bytes_sent, 0 );
+        if( bytes < 0 )
+        {
+            std::cout << "Sent: -1" << std::endl;
+            return -1;
+        }
+        bytes_sent += bytes;
+        //std::cout << "DEBUG:" << " sent bytes: " << bytes << " out of: " << bytes_sent << std::endl;
+    } while( bytes_sent != a_size );
+
+    return bytes_sent;
 }
 
 void TcpSocket::throwError( int a_error )
