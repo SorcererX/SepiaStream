@@ -30,7 +30,7 @@ namespace comm
              header.set_source_router( 0 );
              header.set_message_name( a_message->GetTypeName() );
              std::vector< char > msg_buffer;
-             msg_buffer.resize( a_message->ByteSize() );
+             msg_buffer.resize( a_message->ByteSizeLong() );
              a_message->SerializeToArray( msg_buffer.data(), msg_buffer.size() );
              bool handled = ObserverBase::routeMessageToThreads( &header, msg_buffer.data(), msg_buffer.size() );
              if( !handled )

@@ -55,7 +55,7 @@ void ObserverBase::removeObserver(const std::string& a_name, ObserverBase* a_obs
     }
 }
 
-void ObserverBase::distribute( const std::string& a_name, const char* a_buffer, size_t a_size )
+void ObserverBase::distribute( const std::string& a_name, const char* a_buffer, size_t )
 {
     ObserverMap::iterator it = stm_observers.find( a_name );
 
@@ -82,13 +82,11 @@ bool ObserverBase::threadReceiver()
         stm_initialized = true;
     }
 
-    bool ok = false;
-
     //std::cout << __PRETTY_FUNCTION__ << " called." << std::endl;
     zmq::message_t name_msg;
     try
     {
-        stm_socket.recv( &name_msg ); // ZMQ_NOBLOCK
+        stm_socket.recv( name_msg ); // ZMQ_NOBLOCK
     }
     catch( const zmq::error_t& ex )
     {
@@ -106,7 +104,7 @@ bool ObserverBase::threadReceiver()
     zmq::message_t data;
     try
     {
-        stm_socket.recv( &data, 0 );
+        stm_socket.recv( data );
     }
     catch( const zmq::error_t& ex )
     {

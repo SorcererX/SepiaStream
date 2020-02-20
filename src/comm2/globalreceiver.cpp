@@ -9,8 +9,8 @@ namespace sepia
 namespace comm2
 {
 
-GlobalReceiver::GlobalReceiver() : m_internalSocket( Internals::sm_context, ZMQ_XPUB )
-                                 , m_externalSocket( Internals::sm_context, ZMQ_XSUB )
+GlobalReceiver::GlobalReceiver() : m_externalSocket( Internals::sm_context, ZMQ_XSUB )
+                                 , m_internalSocket( Internals::sm_context, ZMQ_XPUB )
 {
 }
 
@@ -30,7 +30,7 @@ void GlobalReceiver::own_thread()
     m_externalSocket.connect( Internals::sm_externalSub );
     try
     {
-        zmq::proxy( static_cast< void* >( m_externalSocket ), static_cast< void* >( m_internalSocket ), NULL );
+        zmq::proxy( m_externalSocket, m_internalSocket );
     }
     catch( const zmq::error_t& ex )
     {

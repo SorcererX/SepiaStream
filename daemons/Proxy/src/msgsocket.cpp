@@ -33,7 +33,7 @@ MsgSocket::~MsgSocket()
 
 void MsgSocket::sendMsg( const google::protobuf::MessageLite* a_msg )
 {
-    size_t send_bytes = a_msg->ByteSize();
+    size_t send_bytes = a_msg->ByteSizeLong();
     a_msg->SerializeToArray( m_sendBuffer.data(), send_bytes );
     sendMsg( m_sendBuffer.data(), send_bytes );
 }

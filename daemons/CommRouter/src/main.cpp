@@ -10,7 +10,7 @@ int main()
     publisher.bind( "tcp://*:31339" );
     subscriber.bind( "tcp://*:31340" );
 
-    zmq::proxy( static_cast<void *>( publisher ), static_cast<void *>( subscriber ), nullptr );
+    zmq::proxy( publisher, subscriber );
 
     return 0;
 }

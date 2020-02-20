@@ -94,7 +94,7 @@ void MessageSender::rawSend( char* a_header, size_t a_headerSize, const char* a_
 
 void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, const char* a_msg, size_t a_msgSize )
 {
-    size_t size = static_cast< size_t >( a_header->ByteSize() );
+    size_t size = static_cast< size_t >( a_header->ByteSizeLong() );
     char* offset = sm_buffer.data();
     memcpy( offset, reinterpret_cast< char* >( &size ), sizeof( size_t ) );
     offset += sizeof( size_t );
@@ -108,13 +108,13 @@ void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, cons
 
 void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, const google::protobuf::MessageLite* a_msg )
 {
-    size_t size = static_cast< size_t >( a_header->ByteSize() );
+    size_t size = static_cast< size_t >( a_header->ByteSizeLong() );
     char* offset = sm_buffer.data();
     memcpy( offset, reinterpret_cast< char* >( &size ), sizeof( size_t ) );
     offset += sizeof( size_t );
     a_header->SerializeToArray( offset, size );
     offset += size;
-    size = a_msg->ByteSize();
+    size = a_msg->ByteSizeLong();
     a_msg->SerializeToArray( offset, size );
     offset += size;
     sm_messageHandler->putMessage( sm_buffer.data(), offset - sm_buffer.data() );

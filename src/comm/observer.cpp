@@ -204,6 +204,7 @@ bool ObserverBase::resendAllSubscriptions()
         subscribe( msg_name );
     }
     sm_globalMutex->unlock();
+    return true;
 }
 
 bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size )
