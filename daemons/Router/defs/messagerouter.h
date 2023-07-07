@@ -37,7 +37,7 @@ protected:
     void receive( const sepia::comm::internal::UnSubscribe* a_message );
     void receive( const sepia::comm::internal::ProcessDied* a_message );
 
-    void receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size );
+    void receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, std::size_t a_size );
     bool addRoute( const unsigned int a_id, const std::string a_queue );
     void removeRoute( const unsigned int a_id );
     template< class MessageName > void routeMessage( MessageName* msg );

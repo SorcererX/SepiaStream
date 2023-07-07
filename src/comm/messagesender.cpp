@@ -80,11 +80,11 @@ void MessageSender::selectOutput( MessageHandler* a_handler )
     }
 }
 
-void MessageSender::rawSend( char* a_header, size_t a_headerSize, const char* a_msg, size_t a_msgSize )
+void MessageSender::rawSend( char* a_header, std::size_t a_headerSize, const char* a_msg, std::size_t a_msgSize )
 {
     char* offset = sm_buffer.data();
-    memcpy( offset, reinterpret_cast< char* >( &a_headerSize ), sizeof( size_t ) );
-    offset += sizeof( size_t );
+    memcpy( offset, reinterpret_cast< char* >( &a_headerSize ), sizeof( std::size_t ) );
+    offset += sizeof( std::size_t );
     memcpy( offset, a_header, a_headerSize );
     offset += a_headerSize;
     memcpy( offset, a_msg, a_msgSize );
@@ -92,12 +92,12 @@ void MessageSender::rawSend( char* a_header, size_t a_headerSize, const char* a_
     sm_messageHandler->putMessage( sm_buffer.data(), offset - sm_buffer.data() );
 }
 
-void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, const char* a_msg, size_t a_msgSize )
+void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, const char* a_msg, std::size_t a_msgSize )
 {
-    size_t size = static_cast< size_t >( a_header->ByteSizeLong() );
+    std::size_t size = static_cast< std::size_t >( a_header->ByteSizeLong() );
     char* offset = sm_buffer.data();
-    memcpy( offset, reinterpret_cast< char* >( &size ), sizeof( size_t ) );
-    offset += sizeof( size_t );
+    memcpy( offset, reinterpret_cast< char* >( &size ), sizeof( std::size_t ) );
+    offset += sizeof( std::size_t );
     a_header->SerializeToArray( offset, size );
     offset += size;
     memcpy( offset, a_msg, a_msgSize );
@@ -108,10 +108,10 @@ void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, cons
 
 void MessageSender::rawSend( const google::protobuf::MessageLite* a_header, const google::protobuf::MessageLite* a_msg )
 {
-    size_t size = static_cast< size_t >( a_header->ByteSizeLong() );
+    std::size_t size = static_cast< std::size_t >( a_header->ByteSizeLong() );
     char* offset = sm_buffer.data();
-    memcpy( offset, reinterpret_cast< char* >( &size ), sizeof( size_t ) );
-    offset += sizeof( size_t );
+    memcpy( offset, reinterpret_cast< char* >( &size ), sizeof( std::size_t ) );
+    offset += sizeof( std::size_t );
     a_header->SerializeToArray( offset, size );
     offset += size;
     size = a_msg->ByteSizeLong();

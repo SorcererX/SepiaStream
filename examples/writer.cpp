@@ -9,7 +9,7 @@ int main( int argc, char** argv )
     std::vector< char > image;
     image.resize( 1280 * 1024 );
     image.reserve( 1280 * 1024 );
-    for( size_t i = 0; i < image.size(); i++ )
+    for( std::size_t i = 0; i < image.size(); i++ )
     {
         image[i] = i % 255;
     }

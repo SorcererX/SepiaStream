@@ -34,11 +34,11 @@ using sepia::util::print_time;
 
 namespace
 {
-inline void set_bits( uint64_t* a_destination, const char* a_input, size_t a_steps )
+inline void set_bits( uint64_t* a_destination, const char* a_input, std::size_t a_steps )
 {
     std::bitset<64> array;
 
-    for( size_t i = 0; i < a_steps; i++ )
+    for( std::size_t i = 0; i < a_steps; i++ )
     {
         switch( *(a_input + i) )
         {
@@ -92,10 +92,10 @@ Enc3b11b::~Enc3b11b()
 
 }
 
-void Enc3b11b::decode( unsigned char* a_destination, unsigned char* a_source, size_t a_size )
+void Enc3b11b::decode( unsigned char* a_destination, unsigned char* a_source, std::size_t a_size )
 {
-    const size_t pixel_offset = ( a_size * sizeof( u_int64_t ) / m_stepSize + sizeof( u_int64_t )  ) ;
-    size_t read_bytes = 0;
+    const std::size_t pixel_offset = ( a_size * sizeof( u_int64_t ) / m_stepSize + sizeof( u_int64_t )  ) ;
+    std::size_t read_bytes = 0;
     for( int i = 0; i < a_size; i+= sizeof( u_int64_t ) ) // decode entire 64-bit integers.
     {
         u_int64_t* temp = reinterpret_cast< u_int64_t* >( a_source+i );
@@ -139,7 +139,7 @@ void Enc3b11b::decode( unsigned char* a_destination, unsigned char* a_source, si
                 break;
             }
             //std::cout << "index: " << i*step_size+j << std::endl;
-            size_t dest_index = i / sizeof( u_int64_t );
+            std::size_t dest_index = i / sizeof( u_int64_t );
 
             unsigned char orig_value = *(a_destination+dest_index*m_stepSize+j);
 
@@ -148,9 +148,9 @@ void Enc3b11b::decode( unsigned char* a_destination, unsigned char* a_source, si
     }
 }
 
-void Enc3b11b::encode( unsigned char* a_destination, unsigned char* a_source, size_t a_size )
+void Enc3b11b::encode( unsigned char* a_destination, unsigned char* a_source, std::size_t a_size )
 {
-    const size_t pixel_offset = ( a_size * sizeof( u_int64_t ) / m_stepSize + sizeof( u_int64_t )  ) ;
+    const std::size_t pixel_offset = ( a_size * sizeof( u_int64_t ) / m_stepSize + sizeof( u_int64_t )  ) ;
     auto begin = std::chrono::steady_clock::now();
     if( m_lastInput.size() == 0 )
     {
@@ -166,7 +166,7 @@ void Enc3b11b::encode( unsigned char* a_destination, unsigned char* a_source, si
     }
 
     // calculate diff
-    for( size_t i = 0; i < a_size; i++ )
+    for( std::size_t i = 0; i < a_size; i++ )
     {
         short value = static_cast<unsigned char>( *(a_source+i) ) - m_lastInput.at( i );
 
@@ -186,7 +186,7 @@ void Enc3b11b::encode( unsigned char* a_destination, unsigned char* a_source, si
     print_time( begin );
 
     // set bit matrix
-    for( size_t i = 0; i < a_size; i+= m_stepSize )
+    for( std::size_t i = 0; i < a_size; i+= m_stepSize )
     {
         u_int64_t* curr = reinterpret_cast< u_int64_t* >( a_destination+(i*sizeof( u_int64_t) /m_stepSize ) );
         set_bits( curr, reinterpret_cast< char* >( m_diff.data()+i ), std::min( m_stepSize, a_size - i ) );
@@ -194,8 +194,8 @@ void Enc3b11b::encode( unsigned char* a_destination, unsigned char* a_source, si
     print_time( begin );
 
     // write non-0 pixels:
-    size_t written_pixels = 0;
-    for( size_t i = 0; i < m_diff.size(); i++ )
+    std::size_t written_pixels = 0;
+    for( std::size_t i = 0; i < m_diff.size(); i++ )
     {
         if( abs( m_diff[i] ) > 3  )
         {
@@ -205,7 +205,7 @@ void Enc3b11b::encode( unsigned char* a_destination, unsigned char* a_source, si
     }
     print_time( begin );
 
-    size_t frame_size = written_pixels + a_size * sizeof( u_int64_t ) / m_stepSize + sizeof( u_int64_t );
+    std::size_t frame_size = written_pixels + a_size * sizeof( u_int64_t ) / m_stepSize + sizeof( u_int64_t );
 
     std::cout << "3-bit pixels : " << a_size - written_pixels
               << " ( " << ( a_size - written_pixels ) * 100.0 / a_size << "% )"

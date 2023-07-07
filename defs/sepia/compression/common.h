@@ -1,5 +1,6 @@
 #ifndef SEPIA_COMPRESSION_COMMON_H
 #define SEPIA_COMPRESSION_COMMON_H
+#include <cstdint>
 #include <zlib.h> // see http://www.zlib.net/
 
 namespace sepia
@@ -18,8 +19,8 @@ public:
         HUFFYUV
     };
 
-    void setInput( unsigned char* a_input, size_t a_size );
-    void setOutput( unsigned char* a_input, size_t a_maxSize );
+    void setInput( unsigned char* a_input, std::size_t a_size );
+    void setOutput( unsigned char* a_input, std::size_t a_maxSize );
 protected:
     Common();
     ~Common();

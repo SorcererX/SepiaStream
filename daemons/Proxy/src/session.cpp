@@ -83,7 +83,7 @@ void Session::receive( const sepia::comm::internal::RemoteUnsubscription* a_mess
 }
 
 
-void Session::receiveRaw( const sepia::comm::Header* a_header, const char* a_buffer, size_t a_size )
+void Session::receiveRaw( const sepia::comm::Header* a_header, const char* a_buffer, std::size_t a_size )
 {
     std::cout << a_header->message_name() << " RawSend: <NOT DECODED>" << std::endl;
     m_socket->sendMsg( a_header );
@@ -112,11 +112,11 @@ void Session::tcpreceiver_thread()
     sepia::comm::Header header;
     while( !m_terminate )
     {
-        size_t header_size = 0;
+        std::size_t header_size = 0;
         m_socket->recvMsg( m_recvBuffer.data(), header_size );
         header.ParseFromArray( m_recvBuffer.data(), header_size );
 
-        size_t msg_size = 0;
+        std::size_t msg_size = 0;
         m_socket->recvMsg( m_recvBuffer.data() + header_size , msg_size );
 
         if( ( header.message_name() == "sepia.comm.internal.RemoteSubscription" )

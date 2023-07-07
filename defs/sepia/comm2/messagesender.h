@@ -16,11 +16,11 @@ class MessageSender
 public:
     static void init();
     static void destroy();
-    static void rawSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize, bool a_local = false );
-    static void rawRequestSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize );
+    static void rawSend( const std::string& a_name, const unsigned char* a_msg, std::size_t a_msgSize, bool a_local = false );
+    static void rawRequestSend( const std::string& a_name, const unsigned char* a_msg, std::size_t a_msgSize );
 
 protected:
-    static void rawSocketSend( zmq::socket_t& a_socket, const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize );
+    static void rawSocketSend( zmq::socket_t& a_socket, const std::string& a_name, const unsigned char* a_msg, std::size_t a_msgSize );
 
 private:
     MessageSender() = delete;

@@ -7,7 +7,7 @@ namespace sepia
 class Reader : public Stream
 {
 public:
-    Reader( std::string name );
+    Reader( const std::string& a_name );
     void update();
 };
 }

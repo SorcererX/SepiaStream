@@ -207,7 +207,7 @@ bool ObserverBase::resendAllSubscriptions()
     return true;
 }
 
-bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size )
+bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer, const std::size_t a_size )
 {
     MessageNameMap::iterator it = sm_messageNameToThread.find( a_header->message_name() );
 
@@ -222,7 +222,7 @@ bool ObserverBase::routeMessageToThreads( const Header* a_header, char* a_buffer
     return false;
 }
 
-bool ObserverBase::routeToNode( std::thread::id a_node, const Header* a_header, char* a_buffer, const size_t a_size )
+bool ObserverBase::routeToNode( std::thread::id a_node, const Header* a_header, char* a_buffer, const std::size_t a_size )
 {
     ThreadMap::iterator thread_it = sm_threadData.find( a_node );
 
@@ -253,7 +253,7 @@ bool ObserverBase::routeToNode( std::thread::id a_node, const Header* a_header, 
     return false;
 }
 
-bool ObserverBase::handleReceive( const Header* a_header, const char* a_buffer, const size_t a_size )
+bool ObserverBase::handleReceive( const Header* a_header, const char* a_buffer, const std::size_t a_size )
 {
     ObserverMap::iterator it = stm_observers.find( a_header->message_name() );
     if( it != stm_observers.end() )

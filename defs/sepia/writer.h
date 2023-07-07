@@ -1,5 +1,6 @@
 #ifndef SEPIA_WRITER_H
 #define SEPIA_WRITER_H
+#include <string>
 #include <sepia/stream.h>
 
 namespace sepia
@@ -7,10 +8,10 @@ namespace sepia
 class Writer : public Stream
 {
 public:
-    Writer( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp );
+    Writer( const std::string& name, uint32_t images, uint32_t width, uint32_t height, uint32_t bpp );
     ~Writer();
-    bool setSize( size_t id, u_int32_t width, u_int32_t height, u_int32_t bpp );
-    void copyWrite( size_t id, char* address );
+    bool setSize( std::size_t id, uint32_t width, uint32_t height, uint32_t bpp );
+    void copyWrite( std::size_t id, char* address );
     void update();
 
 private:

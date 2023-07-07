@@ -2,7 +2,7 @@
 #include <sepia/network/tcpsocket.h>
 #include "header.pb.h"
 
-const size_t BUFFER_SIZE = 16384; // 16 KiB
+const std::size_t BUFFER_SIZE = 16384; // 16 KiB
 
 MsgSocket::MsgSocket( int a_socket )
 {
@@ -33,12 +33,12 @@ MsgSocket::~MsgSocket()
 
 void MsgSocket::sendMsg( const google::protobuf::MessageLite* a_msg )
 {
-    size_t send_bytes = a_msg->ByteSizeLong();
+    std::size_t send_bytes = a_msg->ByteSizeLong();
     a_msg->SerializeToArray( m_sendBuffer.data(), send_bytes );
     sendMsg( m_sendBuffer.data(), send_bytes );
 }
 
-void MsgSocket::sendMsg( const char* a_buffer, size_t a_size )
+void MsgSocket::sendMsg( const char* a_buffer, std::size_t a_size )
 {
     std::cout << "MsgSocket::sendMsg() - " << a_size << std::flush;
     m_socket->send( a_size );
@@ -48,12 +48,12 @@ void MsgSocket::sendMsg( const char* a_buffer, size_t a_size )
 
 void MsgSocket::recvMsg( google::protobuf::MessageLite* a_msg )
 {
-    size_t elem_size;
+    std::size_t elem_size;
     recvMsg( m_receiveBuffer.data(), elem_size );
     a_msg->ParseFromArray( m_receiveBuffer.data(), elem_size );
 }
 
-void MsgSocket::recvMsg( char* a_buffer, size_t& a_size )
+void MsgSocket::recvMsg( char* a_buffer, std::size_t& a_size )
 {
     std::cout << "MsgSocket::recvMsg() - get size: " << std::flush;
     m_socket->receive( a_size );

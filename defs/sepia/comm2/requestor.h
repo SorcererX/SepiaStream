@@ -21,7 +21,7 @@ namespace comm2
     public:
         void send( const MessageName* a_message )
         {
-           const size_t bytesize = a_message->ByteSize();
+           const std::size_t bytesize = a_message->ByteSize();
 
            if( bytesize > m_buffer.size() )
            {

@@ -35,7 +35,7 @@ protected:
     void receive( const sepia::comm::internal::ForwardUnsubscribe* a_message );
     void receive( const sepia::comm::internal::RemoteSubscription* a_message );
     void receive( const sepia::comm::internal::RemoteUnsubscription* a_message );
-    void receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size );
+    void receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, std::size_t a_size );
     void own_thread();
     void tcpreceiver_thread();
     void init();

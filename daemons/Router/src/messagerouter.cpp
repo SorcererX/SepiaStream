@@ -66,7 +66,7 @@ void MessageRouter::setProcessMonitor( ProcessMonitor* a_processMonitor )
     m_processMonitor = a_processMonitor;
 }
 
-void MessageRouter::receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, size_t a_size )
+void MessageRouter::receiveRaw( const sepia::comm::Header *a_header, const char *a_buffer, std::size_t a_size )
 {
     std::cout << "source: " << a_header->source_node() << " message: " << a_header->message_name() << " ";
     std::cout << "-> ";

@@ -35,19 +35,19 @@ public:
     static bool threadReceiver();
     static void stopThreadReceiver( std::thread::id a_threadId );
     static void enableDebug( bool a_enable );
-    static bool routeMessageToThreads( const Header* a_header, char* a_buffer, const size_t a_size );
+    static bool routeMessageToThreads( const Header* a_header, char* a_buffer, const std::size_t a_size );
     static bool resendAllSubscriptions();
     static bool debugEnabled();
     static std::string commName();
 
 protected:
     void initReceiver();
-    virtual void process( const Header* a_header, const char* a_buffer, size_t a_size ) = 0;
+    virtual void process( const Header* a_header, const char* a_buffer, std::size_t a_size ) = 0;
     void addObserver( const std::string a_name, ObserverBase* a_Observer );
     void removeObserver( const std::string a_name );
     ObserverBase();
-    static bool routeToNode( std::thread::id a_node, const Header* a_header, char* a_buffer, const size_t a_size );
-    static bool handleReceive( const Header* a_header, const char* a_buffer, const size_t a_size );
+    static bool routeToNode( std::thread::id a_node, const Header* a_header, char* a_buffer, const std::size_t a_size );
+    static bool handleReceive( const Header* a_header, const char* a_buffer, const std::size_t a_size );
     static std::shared_ptr< std::mutex > sm_globalMutex;
 
 private:

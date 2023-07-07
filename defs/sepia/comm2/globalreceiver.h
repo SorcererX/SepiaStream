@@ -8,12 +8,11 @@ namespace sepia
 namespace comm2
 {
 
-class GlobalReceiver : sepia::util::ThreadObject
+class GlobalReceiver : public sepia::util::ThreadObject
 {
 public:
     GlobalReceiver();
     ~GlobalReceiver();
-    void start();
     void stop();
 
 protected:

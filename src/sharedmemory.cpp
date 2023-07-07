@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace sepia {
 
-bool SharedMemory::init( std::string& name, size_t bytes, int* fd )
+bool SharedMemory::init( std::string& name, std::size_t bytes, int* fd )
 {
     bool retval;
 

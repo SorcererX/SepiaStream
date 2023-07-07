@@ -48,9 +48,9 @@ Compress::~Compress()
 size_t Compress::perform()
 {
     unsigned char* start = m_stream.next_out;
-    size_t prev_size = m_stream.avail_out;
+    std::size_t prev_size = m_stream.avail_out;
     deflate( &m_stream, Z_NO_FLUSH );
-    size_t wrote = m_stream.next_out - start;
+    std::size_t wrote = m_stream.next_out - start;
     m_stream.next_out = start;
     m_stream.avail_out = prev_size;
     return wrote;

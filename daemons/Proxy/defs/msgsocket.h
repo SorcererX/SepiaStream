@@ -30,8 +30,8 @@ public:
     MsgSocket( sepia::network::TcpSocket* a_socket );
     ~MsgSocket();
     void sendMsg( const google::protobuf::MessageLite* a_msg );
-    void sendMsg( const char* a_buffer, size_t a_size );
-    void recvMsg( char* a_buffer, size_t& a_size );
+    void sendMsg( const char* a_buffer, std::size_t a_size );
+    void recvMsg( char* a_buffer, std::size_t& a_size );
     void recvMsg( google::protobuf::MessageLite* a_msg );
 
 protected:

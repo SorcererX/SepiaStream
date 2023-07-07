@@ -25,8 +25,8 @@ public:
     template< class T > void receive( T& a_data );
     template< class T > void send( T& a_data );
 
-    void receive( char* a_data, size_t a_size );
-    void send( const char* a_data, size_t a_size );
+    void receive( char* a_data, std::size_t a_size );
+    void send( const char* a_data, std::size_t a_size );
     void receiveString( std::string& a_string );
     void sendString( const std::string& a_string );
 
@@ -35,8 +35,8 @@ public:
 
 protected:
     void init();
-    int rawSend( const char* a_data, size_t a_size );
-    int rawReceive( char* a_data, size_t a_size );
+    int rawSend( const char* a_data, std::size_t a_size );
+    int rawReceive( char* a_data, std::size_t a_size );
 
 private:
     int m_sock;

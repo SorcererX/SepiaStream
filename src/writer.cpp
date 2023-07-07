@@ -26,10 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sepia/writer.h>
 #include <iostream>
 #include <cstring>
+#include <string>
 
 namespace sepia
 {
-Writer::Writer( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp )
+Writer::Writer( const std::string& name, uint32_t images, uint32_t width, uint32_t height, uint32_t bpp )
     : Stream( name, images, width, height, bpp )
 {
     m_previousElement.data = NULL;
@@ -40,7 +41,7 @@ Writer::Writer( std::string name, u_int32_t images, u_int32_t width, u_int32_t h
     getGroupHeader()->max_size = width*height*bpp/8;
     getGroupHeader()->count = images;
 
-    for( size_t i = 0; i < getGroupHeader()->count; i++ )
+    for( std::size_t i = 0; i < getGroupHeader()->count; i++ )
     {
         image_header_t* hdr = getHeader( i );
         hdr->width = width;
@@ -63,7 +64,7 @@ Writer::~Writer()
     m_buffer->releaseWriteAccess( m_element );
 }
 
-bool Writer::setSize( size_t id, u_int32_t width, u_int32_t height, u_int32_t bpp )
+bool Writer::setSize( std::size_t id, uint32_t width, uint32_t height, uint32_t bpp )
 {
     if( bpp % 8 != 0 )
     {
@@ -87,7 +88,7 @@ bool Writer::setSize( size_t id, u_int32_t width, u_int32_t height, u_int32_t bp
     return false;
 }
 
-void Writer::copyWrite( size_t id, char* address )
+void Writer::copyWrite( std::size_t id, char* address )
 {
     if( id < getGroupHeader()->count )
     {
@@ -104,7 +105,7 @@ void Writer::update()
     // Ensure that headers are unchanged after update
     memcpy( m_element.data, m_previousElement.data, sizeof( group_header_t ) );
 
-    for( size_t i = 0; i < getGroupHeader()->count; i++ )
+    for( std::size_t i = 0; i < getGroupHeader()->count; i++ )
     {
         memcpy( getHeaderAddress( i), getHeaderAddressFromElement( m_previousElement.data, i ), sizeof( image_header_t ) );
     }

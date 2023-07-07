@@ -29,11 +29,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace sepia
 {
-Stream::Stream( std::string name, u_int32_t images, u_int32_t width, u_int32_t height, u_int32_t bpp )
+Stream::Stream( std::string name, uint32_t images, uint32_t width, uint32_t height, uint32_t bpp )
 {
     m_element.data = NULL;
     m_element.info = NULL;
-    size_t required_size = sizeof( group_header_t ) + images * ( sizeof( image_header_t ) + width*height*bpp/8 );
+    std::size_t required_size = sizeof( group_header_t ) + images * ( sizeof( image_header_t ) + width*height*bpp/8 );
     m_buffer = new sepia::DataBuffer( name, 16, required_size );
 }
 
@@ -63,7 +63,7 @@ Stream::group_header_t* Stream::getGroupHeader()
 }
 
 
-char* Stream::getHeaderAddressFromElement( char* element, size_t id )
+char* Stream::getHeaderAddressFromElement( char* element, std::size_t id )
 {
     if( element )
     {
@@ -75,7 +75,7 @@ char* Stream::getHeaderAddressFromElement( char* element, size_t id )
     }
 }
 
-char* Stream::getHeaderAddress( size_t id )
+char* Stream::getHeaderAddress( std::size_t id )
 {
     if( id < getGroupHeader()->count )
     {
@@ -88,7 +88,7 @@ char* Stream::getHeaderAddress( size_t id )
 }
 
 
-char* Stream::getAddress( size_t id )
+char* Stream::getAddress( std::size_t id )
 {
     char* hdr = getHeaderAddress( id );
 
@@ -102,7 +102,7 @@ char* Stream::getAddress( size_t id )
     }
 }
 
-Stream::image_header_t* Stream::getHeader( size_t id )
+Stream::image_header_t* Stream::getHeader( std::size_t id )
 {
     char* hdr = getHeaderAddress( id );
     if( hdr )
@@ -116,7 +116,7 @@ Stream::image_header_t* Stream::getHeader( size_t id )
     }
 }
 
-size_t Stream::getSize( size_t id )
+size_t Stream::getSize( std::size_t id )
 {
     image_header_t* header = getHeader( id );
     if( header )
@@ -134,7 +134,7 @@ size_t Stream::getMaxSize()
     return getGroupHeader()->max_size;
 }
 
-bool Stream::setSize( size_t id, u_int32_t size )
+bool Stream::setSize( std::size_t id, uint32_t size )
 {
     image_header_t* header = getHeader( id );
     if( header )

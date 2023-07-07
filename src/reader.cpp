@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sepia/databuffer.h>
 namespace sepia
 {
-Reader::Reader( std::string name ) : Stream( name )
+Reader::Reader( const std::string& name ) : Stream( name )
 {
     m_buffer->getReadAccess( m_element );
 }

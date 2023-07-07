@@ -121,7 +121,7 @@ void GlobalReceiver::initRouter()
     }
 }
 
-void GlobalReceiver::receiveData( char** a_buffer, size_t& a_messageSize )
+void GlobalReceiver::receiveData( char** a_buffer, std::size_t& a_messageSize )
 {
     a_messageSize = 0;
 
@@ -130,14 +130,14 @@ void GlobalReceiver::receiveData( char** a_buffer, size_t& a_messageSize )
     if( got_msg )
     {
         sm_lastBufferSize = a_messageSize;
-        size_t header_size = *((size_t*) sm_buffer.data());
+        std::size_t header_size = *((size_t*) sm_buffer.data());
 
-        size_t offset = sizeof( size_t );
+        std::size_t offset = sizeof( std::size_t );
 
         sm_header.ParseFromArray( sm_buffer.data() + offset, header_size );
 
         // calculate size of remaining message.
-        a_messageSize -= ( sizeof( size_t) + header_size );
+        a_messageSize -= ( sizeof( std::size_t) + header_size );
 
         *a_buffer = sm_buffer.data() + offset + header_size;
     }
@@ -168,7 +168,7 @@ void GlobalReceiver::own_thread()
 {
     while( !m_terminate )
     {
-        size_t messageSize = 0;
+        std::size_t messageSize = 0;
         char* msg_ptr = NULL;
         receiveData( &msg_ptr, messageSize );
         if( msg_ptr )

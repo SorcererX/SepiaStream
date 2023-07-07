@@ -8,7 +8,7 @@ namespace sepia {
 class SharedMemory
 {
 public:
-    static bool init( std::string& name, size_t bytes, int* fd );
+    static bool init( std::string& name, std::size_t bytes, int* fd );
     static bool open( std::string& name, int* fd );
     static void mapWrite( int fd, char **address );
     static void mapRead(  int fd, char **address );

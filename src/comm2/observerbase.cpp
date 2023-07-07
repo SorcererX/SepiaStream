@@ -55,7 +55,7 @@ void ObserverBase::removeObserver(const std::string& a_name, ObserverBase* a_obs
     }
 }
 
-void ObserverBase::distribute( const std::string& a_name, const char* a_buffer, size_t )
+void ObserverBase::distribute( const std::string& a_name, const char* a_buffer, std::size_t )
 {
     ObserverMap::iterator it = stm_observers.find( a_name );
 

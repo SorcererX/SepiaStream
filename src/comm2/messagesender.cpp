@@ -27,7 +27,7 @@ void MessageSender::destroy()
     sm_externalRequestSocket.close();
 }
 
-void MessageSender::rawSocketSend( zmq::socket_t& a_socket, const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize )
+void MessageSender::rawSocketSend( zmq::socket_t& a_socket, const std::string& a_name, const unsigned char* a_msg, std::size_t a_msgSize )
 {
     try
     {
@@ -40,7 +40,7 @@ void MessageSender::rawSocketSend( zmq::socket_t& a_socket, const std::string& a
     }
 }
 
-void MessageSender::rawSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize, bool a_local )
+void MessageSender::rawSend( const std::string& a_name, const unsigned char* a_msg, std::size_t a_msgSize, bool a_local )
 {
     if( !a_local )
     {
@@ -52,7 +52,7 @@ void MessageSender::rawSend( const std::string& a_name, const unsigned char* a_m
     }
 }
 
-void MessageSender::rawRequestSend( const std::string& a_name, const unsigned char* a_msg, size_t a_msgSize )
+void MessageSender::rawRequestSend( const std::string& a_name, const unsigned char* a_msg, std::size_t a_msgSize )
 {
     rawSocketSend( sm_externalRequestSocket, a_name, a_msg, a_msgSize );
 }

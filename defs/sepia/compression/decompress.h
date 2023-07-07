@@ -13,7 +13,7 @@ public:
     Decompress( Common::Method a_method );
     ~Decompress();
 
-    size_t perform();
+    std::size_t perform();
 };
 
 }

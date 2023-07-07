@@ -20,7 +20,7 @@ protected:
     ObserverBase() {}
     void addObserver(const std::string &a_name, ObserverBase* a_observer );
     void removeObserver(const std::string& a_name, ObserverBase* a_observer );
-    static void distribute( const std::string& a_name, const char* a_buffer, size_t a_size );
+    static void distribute( const std::string& a_name, const char* a_buffer, std::size_t a_size );
     virtual void process( const char* a_buffer ) = 0;
 private:
     typedef std::map< const std::string, std::unordered_set< ObserverBase* > > ObserverMap;

@@ -98,7 +98,7 @@ void MessageHandler::open()
     }
 }
 
-bool MessageHandler::getMessage( char* a_buffer, size_t& a_receivedBytes )
+bool MessageHandler::getMessage( char* a_buffer, std::size_t& a_receivedBytes )
 {
     unsigned int priority = 0;
     boost::posix_time::time_duration delay = boost::posix_time::seconds( 1 );
@@ -110,7 +110,7 @@ bool MessageHandler::getMessage( char* a_buffer, size_t& a_receivedBytes )
     //m_queue->receive( a_buffer, m_maxMessageSize, a_receivedBytes, priority );
 }
 
-void MessageHandler::putMessage( const char* a_buffer, const size_t& a_bytes )
+void MessageHandler::putMessage( const char* a_buffer, const std::size_t& a_bytes )
 {
     m_queue->send( a_buffer, a_bytes, 0 );
 }

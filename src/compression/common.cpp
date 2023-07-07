@@ -43,13 +43,13 @@ Common::~Common()
 
 }
 
-void Common::setInput( unsigned char *a_input, size_t a_size )
+void Common::setInput( unsigned char *a_input, std::size_t a_size )
 {
     m_stream.avail_in = a_size;
     m_stream.next_in = a_input;
 }
 
-void Common::setOutput( unsigned char *a_input, size_t a_maxSize )
+void Common::setOutput( unsigned char *a_input, std::size_t a_maxSize )
 {
     m_stream.avail_out = a_maxSize;
     m_stream.next_out = a_input;

@@ -215,7 +215,7 @@ int TcpSocket::getFD() const
     return m_sock;
 }
 
-void TcpSocket::send( const char* a_data, size_t a_size )
+void TcpSocket::send( const char* a_data, std::size_t a_size )
 {
     if( rawSend( a_data, a_size ) < 0 )
     {
@@ -223,7 +223,7 @@ void TcpSocket::send( const char* a_data, size_t a_size )
     }
 }
 
-void TcpSocket::receive( char* a_data, size_t a_size )
+void TcpSocket::receive( char* a_data, std::size_t a_size )
 {
     if( rawReceive( a_data, a_size ) < 0 )
     {
@@ -231,7 +231,7 @@ void TcpSocket::receive( char* a_data, size_t a_size )
     }
 }
 
-int TcpSocket::rawReceive( char* a_data, size_t a_size )
+int TcpSocket::rawReceive( char* a_data, std::size_t a_size )
 {
     int bytes_received = 0;
 
@@ -251,7 +251,7 @@ int TcpSocket::rawReceive( char* a_data, size_t a_size )
     return bytes_received;
 }
 
-int TcpSocket::rawSend( const char* a_data, size_t a_size )
+int TcpSocket::rawSend( const char* a_data, std::size_t a_size )
 {
     int bytes_sent = 0;
     do

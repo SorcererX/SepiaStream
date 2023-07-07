@@ -14,7 +14,7 @@ public:
         // TODO implement destructor.
     }
 protected:
-    void process( const Header* a_header, const char* a_buffer, size_t a_size )
+    void process( const Header* a_header, const char* a_buffer, std::size_t a_size )
     {
         receiveRaw( a_header, a_buffer, a_size );
     }
@@ -33,7 +33,7 @@ protected:
         ObserverBase::removeObserver( a_name );
         sm_globalMutex->unlock();
     }
-    virtual void receiveRaw( const Header* a_header, const char* a_buffer, size_t a_size ) = 0;
+    virtual void receiveRaw( const Header* a_header, const char* a_buffer, std::size_t a_size ) = 0;
 
 private:
     bool m_initialized;

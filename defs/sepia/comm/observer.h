@@ -27,7 +27,7 @@ public:
 protected:
     Observer() : m_initialized( false ) {
     }
-    void process( const Header* a_header, const char* a_buffer, size_t a_size )
+    void process( const Header* a_header, const char* a_buffer, std::size_t a_size )
     {
         m_message.ParseFromArray( a_buffer, a_size );
         if( ObserverBase::debugEnabled() && m_message.GetTypeName() != "sepia.comm.internal.IdNotify" )

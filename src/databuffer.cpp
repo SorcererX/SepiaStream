@@ -37,7 +37,7 @@ namespace sepia
 {
 DataBuffer::DataBuffer( std::string a_name,
                         unsigned int count,
-                        size_t elem_size ) : m_memoryPool( NULL )
+                        std::size_t elem_size ) : m_memoryPool( NULL )
                                            , m_name( a_name )
                                            , m_semaphore( NULL )
 {
