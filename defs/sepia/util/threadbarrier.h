@@ -16,6 +16,7 @@ public:
         auto generation = m_generation;
         if( !--m_count )
         {
+            m_generation++;
             m_count = m_threshold;
             m_condvar.notify_all();
         }
