@@ -51,11 +51,6 @@ void ProcessMonitor::remove( unsigned int pid )
     m_pids.erase( it );
 }
 
-void ProcessMonitor::start()
-{
-    m_thread = new std::thread( std::bind( &ProcessMonitor::own_thread, this ) );
-}
-
 void ProcessMonitor::own_thread()
 {
     sepia::comm::internal::ProcessDied msg;

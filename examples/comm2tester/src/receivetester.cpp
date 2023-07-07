@@ -18,12 +18,6 @@ ReceiveTester::ReceiveTester( const ReceiveTester& a_object )
     m_protobufMessageCount = a_object.m_protobufMessageCount;
 }
 
-void ReceiveTester::start()
-{
-    m_thread = new std::thread( std::bind( &ReceiveTester::own_thread, this ) );
-
-}
-
 void ReceiveTester::own_thread()
 {
     sepia::comm2::Observer< comm2tester_msgs::TestT >::initReceiver();

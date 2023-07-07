@@ -11,13 +11,17 @@ namespace util
     {
     public:
         ThreadObject();
+        virtual ~ThreadObject();
         void join();
         void stop();
-        virtual void start() = 0;
+        void start();
 
     protected:
-        std::atomic_bool m_terminate;
-        std::thread* m_thread;
+        virtual void own_thread() = 0;
+
+    protected:
+        std::atomic_bool m_terminate{ true };
+        std::unique_ptr< std::thread > m_thread{ nullptr };
     };
 }
 }

@@ -8,7 +8,6 @@ class ProcessMonitor : public sepia::util::ThreadObject
 {
 public:
     ProcessMonitor();
-    void start();
     void add( unsigned int pid );
     void remove( unsigned int pid );
 

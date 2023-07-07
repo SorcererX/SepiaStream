@@ -23,11 +23,6 @@ ProxyServer::~ProxyServer()
     delete m_socket;
 }
 
-void ProxyServer::start()
-{
-    m_thread = new std::thread( std::bind( &ProxyServer::own_thread, this ) );
-}
-
 void ProxyServer::own_thread()
 {
     m_socket->listen( 5 );

@@ -66,7 +66,7 @@ bool GlobalReceiver::isRouter()
 
 void GlobalReceiver::start()
 {
-    m_thread = new std::thread( std::bind( &GlobalReceiver::own_thread, this ) );
+    sepia::util::ThreadObject::start();
 
     if( !sm_isRouter )
     {

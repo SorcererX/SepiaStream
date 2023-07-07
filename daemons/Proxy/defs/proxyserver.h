@@ -19,8 +19,6 @@ class ProxyServer : public sepia::util::ThreadObject
 public:
     ProxyServer( int a_port );
     ~ProxyServer();
-    void start();
-    void stop();
 
 protected:
     void own_thread();

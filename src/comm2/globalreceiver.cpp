@@ -19,11 +19,6 @@ GlobalReceiver::~GlobalReceiver()
 
 }
 
-void GlobalReceiver::start()
-{
-    m_thread = new std::thread( std::bind( &GlobalReceiver::own_thread, this ) );
-}
-
 void GlobalReceiver::own_thread()
 {
     m_internalSocket.bind( Internals::sm_internalSub );
@@ -46,6 +41,7 @@ void GlobalReceiver::stop()
 {
     MessageSender::destroy();
     Internals::sm_context.close();
+    sepia::util::ThreadObject::stop();
 }
 
 

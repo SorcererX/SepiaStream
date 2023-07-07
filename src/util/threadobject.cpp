@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <memory>
 #include "threadobject.h"
 
 
@@ -32,14 +33,30 @@ namespace util
 {
 ThreadObject::ThreadObject()
 {
-    m_terminate = false;
+}
+
+ThreadObject::~ThreadObject()
+{
+    stop();
+    join();
+}
+
+void ThreadObject::start()
+{
+    if( !m_thread && m_terminate )
+    {
+        m_terminate = false;
+        m_thread = std::make_unique< std::thread >( [this]{ own_thread(); } );
+    }
 }
 
 void ThreadObject::join()
 {
-    if( m_thread )
+    if( m_thread && m_thread->joinable() )
     {
         m_thread->join();
+        m_thread.reset();
+        m_terminate = true;
     }
 }
 

@@ -36,7 +36,7 @@ Session::~Session()
 
 void Session::start()
 {
-    m_thread = new std::thread( std::bind( &Session::own_thread, this ) );
+    sepia::util::ThreadObject::start();
     m_tcpReceiverThread = new std::thread( std::bind( &Session::tcpreceiver_thread, this ) );
 }
 

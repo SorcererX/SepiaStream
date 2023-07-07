@@ -11,7 +11,6 @@ public:
     ReceiveTester();
     ~ReceiveTester();
     ReceiveTester( const ReceiveTester& a_object );
-    void start();
     void stop();
     int64_t getMessageCount();
 

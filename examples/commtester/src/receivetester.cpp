@@ -15,11 +15,6 @@ ReceiveTester::ReceiveTester( const ReceiveTester& a_object )
     m_messageCount = a_object.m_messageCount;
 }
 
-void ReceiveTester::start()
-{
-    m_thread = new std::thread( std::bind( &ReceiveTester::own_thread, this ) );
-}
-
 void ReceiveTester::own_thread()
 {
     sepia::comm::Observer< commtester_msgs::Test >::initReceiver();
