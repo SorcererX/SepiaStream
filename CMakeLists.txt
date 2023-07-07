@@ -1,10 +1,11 @@
+cmake_minimum_required( VERSION 3.16.3 )
 project(SepiaStream)
 include( ExternalProject )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -fPIC -O2 -pthread -lrt")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O2 -pthread -lrt")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
-
-cmake_minimum_required(VERSION 2.8)
 
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
 set(BUILD_COMM ON CACHE BOOL "Include deprecated Communication library (requires Boost and Protobuf)")
