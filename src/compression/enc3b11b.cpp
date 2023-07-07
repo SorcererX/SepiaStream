@@ -23,7 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <enc3b11b.h>
+#include <sepia/compression/enc3b11b.h>
 #include <sepia/util/helper.h>
 #include <cstdint>
 #include <bitset>

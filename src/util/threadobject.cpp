@@ -24,7 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <memory>
-#include "threadobject.h"
+#include <sepia/util/threadobject.h>
 
 
 namespace sepia

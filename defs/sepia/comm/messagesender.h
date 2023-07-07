@@ -28,10 +28,12 @@ public:
     static void rawSend( const google::protobuf::MessageLite* a_header, const char* a_msg, std::size_t a_msgSize );
     static void rawSend( const google::protobuf::MessageLite* a_header, const google::protobuf::MessageLite* a_msg );
 
+protected:
+    static sepia::comm::Header* sm_header;
+
 private:
     MessageSender() = delete;
     static MessageHandler* sm_messageHandler;
-    static sepia::comm::Header* sm_header;
     static std::vector< char > sm_buffer;
 };
 }

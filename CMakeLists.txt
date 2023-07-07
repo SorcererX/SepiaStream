@@ -91,10 +91,6 @@ aux_source_directory(src/network SRC_LIST)
 aux_source_directory(src/util SRC_LIST)
 aux_source_directory(src/compression SRC_LIST)
 include_directories(defs)
-include_directories(defs/sepia)
-include_directories(defs/sepia/network)
-include_directories(defs/sepia/util)
-include_directories(defs/sepia/compression)
 
 add_library( ${PROJECT_NAME} ${SRC_LIST} ${HEADER_FILES} ${PROTO_SRCS} ${PROTO_HDRS}  )
 
