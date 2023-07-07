@@ -9,7 +9,10 @@ namespace sepia::util
 class ThreadBarrier
 {
 public:
-    explicit ThreadBarrier( std::size_t a_count ) : m_count( a_count ) {}
+    explicit ThreadBarrier( std::size_t a_count ) : m_count( a_count )
+                                                  , m_threshold( a_count )
+    {}
+
     void wait()
     {
         std::unique_lock< std::mutex > lock( m_mutex );
@@ -32,7 +35,7 @@ private:
     std::mutex m_mutex;
     std::condition_variable m_condvar;
     std::size_t m_count;
-    std::size_t m_generation;
+    std::size_t m_generation{ 0 };
     std::size_t m_threshold;
 };
 }
