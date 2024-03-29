@@ -2,6 +2,7 @@
 #define SEPIA_COMM2_DISPATCHER_H
 #include <sepia/comm2/messagesender.h>
 #include <iostream>
+#include <flatbuffers/flatbuffers.h>
 #include <google/protobuf/message_lite.h>
 
 namespace sepia
@@ -12,31 +13,36 @@ namespace comm2
    class Dispatcher : protected MessageSender
    {
       public:
-         static void send( const MessageName* a_message, bool a_local = false );
-         static void localSend( const MessageName* a_message );
+         static void send( const MessageName* a_message, unsigned int a_subscriberId = 0 );
    };
 
    template< typename MessageName >
    class Dispatcher< MessageName, typename std::enable_if< std::is_base_of< google::protobuf::MessageLite, MessageName >::value >::type > : protected MessageSender
    {
       public:
-         static void send( const MessageName* a_message, bool a_local = false )
+         static void send( const MessageName* a_message, unsigned int a_subscriberId = 0 )
          {
-            const std::size_t bytesize = a_message->ByteSizeLong();
+            const int bytesize = a_message->ByteSize();
 
             if( bytesize > stm_buffer.size() )
             {
-                stm_buffer.resize( bytesize * 1.5 );
+                stm_buffer.resize( bytesize * 3 / 2 );
             }
             a_message->SerializeToArray( stm_buffer.data(), bytesize );
 
-            rawSend( MessageName::default_instance().GetTypeName(), reinterpret_cast< const unsigned char* >( stm_buffer.data() ), bytesize, a_local );
+            if( a_subscriberId == 0 )
+            {
+                rawSend( MessageName::default_instance().GetTypeName(), reinterpret_cast< const unsigned char* >( stm_buffer.data() ), bytesize );
+            }
+            else
+            {
+                std::string filter = MessageName::default_instance().GetTypeName();
+                filter.append( "," );
+                filter.append( std::to_string( a_subscriberId ) );
+                rawSend( filter, reinterpret_cast< const unsigned char* >( stm_buffer.data() ), bytesize );
+            }
          }
 
-         static void localSend( const MessageName* a_message )
-         {
-             send( a_message, true );
-         }
    private:
          static thread_local std::vector< char > stm_buffer;
    };
@@ -48,18 +54,22 @@ namespace comm2
    class Dispatcher< MessageName, typename std::enable_if< std::is_base_of< flatbuffers::NativeTable, MessageName >::value >::type > : protected MessageSender
    {
       public:
-         static void send( const MessageName* a_message, bool a_local = false )
+         static void send( const MessageName* a_message, unsigned int a_subscriberId = 0 )
          {
             flatbuffers::FlatBufferBuilder fbb;
             auto offset = MessageName::TableType::Pack( fbb, a_message );
             fbb.Finish( offset );
-
-            rawSend( MessageName::GetFullyQualifiedName(), fbb.GetBufferPointer(), fbb.GetSize(), a_local );
-         }
-
-         static void localSend( const MessageName* a_message )
-         {
-             send( a_message, true );
+            if( a_subscriberId == 0 )
+            {
+               rawSend( MessageName::GetFullyQualifiedName(), fbb.GetBufferPointer(), fbb.GetSize() );
+            }
+            else
+            {
+               std::string filter = MessageName::GetFullyQualifiedName();
+               filter.append( "," );
+               filter.append( std::to_string( a_subscriberId ) );
+               rawSend( filter, fbb.GetBufferPointer(), fbb.GetSize() );
+            }
          }
    };
 }

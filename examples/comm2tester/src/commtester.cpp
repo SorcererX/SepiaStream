@@ -1,4 +1,3 @@
-#include <sepia/comm2/globalreceiver.h>
 #include <sepia/comm2/dispatcher.h>
 #include "../defs/receivetester.hpp"
 #include <iostream>
@@ -26,16 +25,11 @@ int main( int argc, char** argv )
         std::cout << "where mode is: " << std::endl;
         std::cout << "0 - local send (flatbuffers)" << std::endl;
         std::cout << "1 - global send (flatbuffers)" << std::endl;
-        std::cout << "2 - local send (protobuf)" << std::endl;
-        std::cout << "3 - global send (protobuf)" << std::endl;
-        std::cout << "4 - only receive" << std::endl;
+        std::cout << "2 - only receive" << std::endl;
+        std::cout << "3 - local send (protobuf)" << std::endl;
+        std::cout << "4 - global send (protobuf)" << std::endl;
         return 1;
     }
-
-    // start global receive thread (required to receive messages)
-    // this will dispatch messages to all thread receivers.
-    sepia::comm2::GlobalReceiver receiver;
-    receiver.start();
 
     sepia::comm2::MessageSender::init();
     std::vector< ReceiveTester > m_receivers;
@@ -46,6 +40,7 @@ int main( int argc, char** argv )
         m_receivers[i].start();
     }
 
+    std::cout << "mode: " << mode << std::endl;
     if( mode == 0 || mode == 1 )
     {
         comm2tester_msgs::TestT message;
@@ -63,7 +58,7 @@ int main( int argc, char** argv )
             message.time = now.time_since_epoch().count();
             if( mode == 0 )
             {
-                sepia::comm2::Dispatcher< comm2tester_msgs::TestT >::localSend( &message );
+                sepia::comm2::Dispatcher< comm2tester_msgs::TestT >::send( &message );
             }
             else
             {
@@ -89,7 +84,7 @@ int main( int argc, char** argv )
         std::cout << "Waiting 200 ms after starting receivers before starting send..." << std::endl;
         usleep( 200000 );
         std::cout << "Starting send." << std::endl;
-//#pragma omp parallel for
+
         for( int i = 0; i < message_count; i++ )
         {
             message.set_seq_no( i );
@@ -97,7 +92,7 @@ int main( int argc, char** argv )
             message.set_time( now.time_since_epoch().count() );
             if( mode == 0 )
             {
-                sepia::comm2::Dispatcher< comm2tester_msgs::ProtoTest >::localSend( &message );
+                sepia::comm2::Dispatcher< comm2tester_msgs::ProtoTest >::send( &message );
             }
             else
             {
@@ -122,13 +117,12 @@ int main( int argc, char** argv )
         got_messages = true;
         for( int i = 0; i < m_receivers.size(); i++ )
         {
-            if(  m_receivers[ i ].getMessageCount() != message_count  )
+            if( m_receivers[ i ].getMessageCount() != message_count  )
             {
                 got_messages = false;
             }
         }
     }
-    receiver.stop();
 
     for( int i = 0; i < m_receivers.size(); i++ )
     {
@@ -143,10 +137,8 @@ int main( int argc, char** argv )
     {
         std::cout << i << ": " <<  m_receivers[ i ].getMessageCount() << std::endl;
     }
+    sepia::comm2::MessageSender::destroy();
 
-
-//    receiver.stop();
-//    receiver.join();
     std::cout << "all done." << std::endl;
     return 0;
 }

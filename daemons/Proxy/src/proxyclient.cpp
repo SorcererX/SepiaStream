@@ -1,5 +1,5 @@
-#include "proxyclient.h"
-#include "session.h"
+#include <proxyclient.h>
+#include <session.h>
 #include <sepia/network/tcpsocket.h>
 
 ProxyClient::ProxyClient( const std::string& a_host, int a_port )

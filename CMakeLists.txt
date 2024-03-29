@@ -1,10 +1,10 @@
 cmake_minimum_required( VERSION 3.16.3 )
-project(SepiaStream)
+project(SepiaStream C CXX ASM)
 include( ExternalProject )
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O2 -pthread -lrt")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O2 -pthread")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
@@ -51,10 +51,7 @@ if(BUILD_COMM2)
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observer.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observerbase.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagesender.h
-         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagereceiver.h
-         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/globalreceiver.h
-         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/requestor.h
-         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/internals.h )
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/global.h )
      aux_source_directory(src/comm2 SRC_LIST)
      include_directories(defs/sepia/comm2)
      install( FILES ${COMM2_INCLUDES} DESTINATION include/sepia/comm2 )

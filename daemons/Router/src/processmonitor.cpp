@@ -23,7 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "processmonitor.h"
+#include <processmonitor.h>
 #include <sepia/comm/dispatcher.h>
 #include "internal.pb.h"
 #include <functional>

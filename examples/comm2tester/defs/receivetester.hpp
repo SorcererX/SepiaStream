@@ -15,8 +15,8 @@ public:
     int64_t getMessageCount();
 
 protected:
-    void receive( const std::unique_ptr< comm2tester_msgs::TestT >& a_msg );
-    void receive( const std::unique_ptr< comm2tester_msgs::ProtoTest >& a_msg );
+    void receive( const comm2tester_msgs::TestT& a_msg ) override;
+    void receive( const comm2tester_msgs::ProtoTest& a_msg ) override;
     void own_thread();
     int64_t m_flatbufferMessageCount;
     int64_t m_protobufMessageCount;
