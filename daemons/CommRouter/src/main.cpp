@@ -1,16 +1,24 @@
 #include <iostream>
+#include <messagelogger.h>
 #include <zmq.hpp>
 
-int main()
+int main(int argc, char *argv[])
 {
-    zmq::context_t context( 2 );
+    zmq::context_t context( 3 );
     zmq::socket_t publisher( context, ZMQ_XPUB );
     zmq::socket_t subscriber( context, ZMQ_XSUB );
+    zmq::socket_t capture( context, ZMQ_PUSH );
 
-    publisher.bind( "tcp://127.0.0.1:31339" );
-    subscriber.bind( "tcp://127.0.0.1:31340" );
+    capture.bind( "inproc://capture" );
+    publisher.bind( "tcp://*:31339" );
+    subscriber.bind( "tcp://*:31340" );
 
-    zmq::proxy( publisher, subscriber );
+    MessageLogger logger( &context );
+    logger.start();
+
+    zmq::proxy( static_cast<void *>( publisher ), static_cast<void *>( subscriber ), static_cast< void* >( capture ) );
+    logger.stop();
+    logger.join();
 
     return 0;
 }
