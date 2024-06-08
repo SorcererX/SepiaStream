@@ -15,7 +15,7 @@ namespace sepia
         {
             public:
                 virtual ~ObserverBase() {}
-                static bool initReceiver( int a_timeoutUs = 0 );
+                static bool initReceiver( int a_timeoutUs = -1 );
                 static bool threadReceiver();
                 static bool destroyReceiver();
 
