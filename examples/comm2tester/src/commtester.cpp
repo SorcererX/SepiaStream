@@ -32,12 +32,16 @@ int main( int argc, char** argv )
     }
 
     sepia::comm2::MessageSender::init();
-    std::vector< ReceiveTester > m_receivers;
-    m_receivers.resize( receive_count );
+    std::vector< std::unique_ptr< ReceiveTester > > m_receivers;
+
+    for( size_t i = 0; i < receive_count; i++ )
+    {
+        m_receivers.emplace_back( std::make_unique< ReceiveTester >() );
+    }
 
     for( int i = 0; i < m_receivers.size(); i++ )
     {
-        m_receivers[i].start();
+        m_receivers[i]->start();
     }
 
     std::cout << "mode: " << mode << std::endl;
@@ -117,7 +121,7 @@ int main( int argc, char** argv )
         got_messages = true;
         for( int i = 0; i < m_receivers.size(); i++ )
         {
-            if( m_receivers[ i ].getMessageCount() != message_count  )
+            if( m_receivers[ i ]->getMessageCount() != message_count  )
             {
                 got_messages = false;
             }
@@ -126,16 +130,16 @@ int main( int argc, char** argv )
 
     for( int i = 0; i < m_receivers.size(); i++ )
     {
-        m_receivers[ i ].stop();
+        m_receivers[ i ]->stop();
     }
     for( int i = 0; i < m_receivers.size(); i++ )
     {
-        m_receivers[ i ].join();
+        m_receivers[ i ]->join();
     }
 
     for( int i = 0; i < m_receivers.size(); i++ )
     {
-        std::cout << i << ": " <<  m_receivers[ i ].getMessageCount() << std::endl;
+        std::cout << i << ": " <<  m_receivers[ i ]->getMessageCount() << std::endl;
     }
     sepia::comm2::MessageSender::destroy();
 

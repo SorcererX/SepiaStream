@@ -47,8 +47,10 @@ endif(WITH_FLATBUFFERS)
 
 if(BUILD_COMM2)
     set( COMM2_INCLUDES
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/receiver.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/dispatcher.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observer.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observerall.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observerbase.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagesender.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/global.h )

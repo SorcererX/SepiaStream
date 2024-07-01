@@ -1,10 +1,11 @@
 #include "receivetester.hpp"
-#include "observerbase.h"
+#include "receiver.h"
 
-ReceiveTester::ReceiveTester() : m_flatbufferMessageCount( 0 )
-                               , m_protobufMessageCount( 0 )
-                               , m_lastFlatbufferSeqNo( -1 )
-                               , m_lastProtobufSeqNo( -1 )
+ReceiveTester::ReceiveTester()
+    : m_flatbufferMessageCount( 0 )
+    , m_protobufMessageCount( 0 )
+    , m_lastFlatbufferSeqNo( -1 )
+    , m_lastProtobufSeqNo( -1 )
 {
 }
 
@@ -13,23 +14,15 @@ ReceiveTester::~ReceiveTester()
 
 }
 
-ReceiveTester::ReceiveTester( const ReceiveTester& a_object )
-{
-    m_flatbufferMessageCount = a_object.m_flatbufferMessageCount;
-    m_protobufMessageCount = a_object.m_protobufMessageCount;
-}
-
 void ReceiveTester::own_thread()
 {
-    sepia::comm2::ObserverBase::initReceiver( 100 );
-    sepia::comm2::Observer< comm2tester_msgs::TestT >::initReceiver();
-    sepia::comm2::Observer< comm2tester_msgs::ProtoTest >::initReceiver();
-    while( !m_terminate && sepia::comm2::ObserverBase::threadReceiver() )
+    sepia::comm2::Receiver handler;
+    handler.addObserver( this );
+    handler.init( 100 );
+
+    while( !m_terminate && handler.exec() )
     {
     }
-    sepia::comm2::Observer< comm2tester_msgs::TestT >::destroyReceiver();
-    sepia::comm2::Observer< comm2tester_msgs::ProtoTest >::destroyReceiver();
-    sepia::comm2::ObserverBase::destroyReceiver();
 }
 
 void ReceiveTester::stop()

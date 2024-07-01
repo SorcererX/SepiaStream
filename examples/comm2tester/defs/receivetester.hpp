@@ -2,6 +2,7 @@
 #include <sepia/util/threadobject.h>
 #include "comm2tester_msgs_generated.h"
 #include "comm2tester_msgs.pb.h"
+#include <sepia/comm2/receiver.h>
 
 class ReceiveTester : public sepia::comm2::Observer< comm2tester_msgs::TestT >
                     , public sepia::comm2::Observer< comm2tester_msgs::ProtoTest >
@@ -10,7 +11,6 @@ class ReceiveTester : public sepia::comm2::Observer< comm2tester_msgs::TestT >
 public:
     ReceiveTester();
     ~ReceiveTester();
-    ReceiveTester( const ReceiveTester& a_object );
     void stop();
     int64_t getMessageCount();
 
