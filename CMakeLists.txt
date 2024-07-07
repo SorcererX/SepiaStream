@@ -53,6 +53,7 @@ if(BUILD_COMM2)
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observerall.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/observerbase.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/messagesender.h
+         ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/scopedmessagesender.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/global.h )
      aux_source_directory(src/comm2 SRC_LIST)
      include_directories(defs/sepia/comm2)

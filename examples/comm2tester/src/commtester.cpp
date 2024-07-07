@@ -1,5 +1,6 @@
 #include <sepia/comm2/dispatcher.h>
 #include "../defs/receivetester.hpp"
+#include <sepia/comm2/scopedmessagesender.h>
 #include <iostream>
 #include <chrono>
 #include <unistd.h>
@@ -31,7 +32,7 @@ int main( int argc, char** argv )
         return 1;
     }
 
-    sepia::comm2::MessageSender::init();
+    sepia::comm2::ScopedMessageSender sender;
     std::vector< std::unique_ptr< ReceiveTester > > m_receivers;
 
     for( size_t i = 0; i < receive_count; i++ )
@@ -141,7 +142,6 @@ int main( int argc, char** argv )
     {
         std::cout << i << ": " <<  m_receivers[ i ]->getMessageCount() << std::endl;
     }
-    sepia::comm2::MessageSender::destroy();
 
     std::cout << "all done." << std::endl;
     return 0;
