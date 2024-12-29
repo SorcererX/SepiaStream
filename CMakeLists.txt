@@ -21,6 +21,7 @@ if(WITH_PROTOBUF)
 endif(WITH_PROTOBUF)
 
 if(BUILD_COMM)
+    find_package(Boost REQUIRED)
     PROTOBUF_GENERATE_CPP(PROTO_SRCS
                           PROTO_HDRS
                           ${CMAKE_SOURCE_DIR}/src/comm/header.proto
@@ -46,6 +47,7 @@ if(WITH_FLATBUFFERS)
 endif(WITH_FLATBUFFERS)
 
 if(BUILD_COMM2)
+    find_package(cppzmq REQUIRED)
     set( COMM2_INCLUDES
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/receiver.h
          ${CMAKE_SOURCE_DIR}/defs/sepia/comm2/dispatcher.h
@@ -99,7 +101,7 @@ if(WITH_PROTOBUF)
 endif(WITH_PROTOBUF)
 
 if(BUILD_COMM2)
-    target_link_libraries( ${PROJECT_NAME} -lzmq )
+    target_link_libraries( ${PROJECT_NAME} ${cppzmq_LIBRARY} ${ZeroMQ_LIBRARIES} )
 endif(BUILD_COMM2)
 
 if(WITH_FLATBUFFERS)

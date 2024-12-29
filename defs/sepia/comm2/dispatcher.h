@@ -22,7 +22,7 @@ namespace comm2
       public:
          static void send( const MessageName* a_message, unsigned int a_subscriberId = 0 )
          {
-            const int bytesize = a_message->ByteSize();
+            const int bytesize = a_message->ByteSizeLong();
 
             if( bytesize > stm_buffer.size() )
             {
