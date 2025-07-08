@@ -1,8 +1,5 @@
 if(BUILD_DAEMONS)
     project( daemons )
-    add_subdirectory( Router )
-    add_subdirectory( CommRouter )
-    add_subdirectory( Proxy )
     add_executable( client client.cpp )
     add_dependencies( client SepiaStream )
     target_link_libraries( client SepiaStream )
